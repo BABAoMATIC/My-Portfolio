@@ -6,10 +6,57 @@ interface PreloadAnimationProps {}
 const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
   const [progress, setProgress] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
+  const [preloadStatus, setPreloadStatus] = useState('');
   const textRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const preloadedVideos = useRef<HTMLVideoElement[]>([]);
 
   useEffect(() => {
+    // Video files to preload
+    const videoFiles = [
+      '/videos/hero1.mp4',
+      '/videos/hero2.webm',
+      '/videos/hero3.webm',
+      '/videos/hero4.mp4',
+      '/videos/hero5.webm',
+      '/videos/hero6.mp4',
+      '/videos/hero7.webm',
+      '/videos/hero8.webm',
+      '/videos/hero9.webm',
+      '/videos/hero10.webm',
+      '/videos/hero11.webm'
+    ];
+
+    // Aggressive video preloading during loading screen
+    const preloadAllVideos = () => {
+      setPreloadStatus('Preloading videos...');
+      let loadedCount = 0;
+      
+      videoFiles.forEach((videoSrc, index) => {
+        const video = document.createElement('video');
+        video.src = videoSrc;
+        video.preload = 'auto';
+        video.muted = true;
+        video.playsInline = true;
+        video.load();
+        
+        preloadedVideos.current.push(video);
+        
+        video.addEventListener('canplaythrough', () => {
+          loadedCount++;
+          setPreloadStatus(`Preloaded ${loadedCount}/${videoFiles.length} videos`);
+          console.log(`✅ Preloaded video ${index + 1}: ${videoSrc}`);
+        });
+        
+        video.addEventListener('error', (e) => {
+          console.warn(`⚠️ Failed to preload video ${index + 1}: ${videoSrc}`, e);
+        });
+      });
+    };
+
+    // Start video preloading immediately
+    preloadAllVideos();
+
     // Typing effect simulation
     const text = "Nishit Bhardwaj";
     let currentText = "";
@@ -90,9 +137,14 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
                 transition={{ duration: 0.3 }}
               />
             </div>
-            <div className="text-lg text-gray-300 font-inter">
+            <div className="text-lg text-gray-300 font-inter mb-2">
               {progress}%
             </div>
+            {preloadStatus && (
+              <div className="text-sm text-gray-400 font-inter">
+                {preloadStatus}
+              </div>
+            )}
           </motion.div>
         )}
 

@@ -91,20 +91,30 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   ], []);
 
   useEffect(() => {
-    // Initial preloading of first few videos
-    const preloadInitialVideos = () => {
-      for (let i = 0; i < Math.min(3, videoFiles.length); i++) {
+    // Aggressive preloading of ALL videos during initial load
+    const preloadAllVideos = () => {
+      console.log('🚀 Starting aggressive preloading of all videos...');
+      videoFiles.forEach((videoSrc, index) => {
         const video = document.createElement('video');
-        video.src = videoFiles[i];
-        video.preload = i === 0 ? 'auto' : 'metadata'; // Full preload for first video
+        video.src = videoSrc;
+        video.preload = 'auto'; // Full preload for ALL videos
         video.muted = true;
         video.playsInline = true;
         video.load();
-      }
+        
+        // Add event listeners to track loading progress
+        video.addEventListener('canplaythrough', () => {
+          console.log(`✅ Video ${index + 1} fully preloaded: ${videoSrc}`);
+        });
+        
+        video.addEventListener('error', (e) => {
+          console.warn(`⚠️ Failed to preload video ${index + 1}: ${videoSrc}`, e);
+        });
+      });
     };
 
-    // Start initial preloading
-    preloadInitialVideos();
+    // Start aggressive preloading immediately
+    preloadAllVideos();
 
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
@@ -125,12 +135,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     setIsVideoLoading(true);
   }, [currentVideoIndex]);
 
-  // Enhanced preloading system to prevent buffering
+  // Enhanced preloading system with 5-second early preloading
   useEffect(() => {
     // Preload current video fully
     const currentVideo = document.createElement('video');
     currentVideo.src = videoFiles[currentVideoIndex];
-    currentVideo.preload = 'auto'; // Preload full video
+    currentVideo.preload = 'auto';
     currentVideo.muted = true;
     currentVideo.playsInline = true;
     currentVideo.load();
@@ -139,22 +149,46 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     const nextIndex = (currentVideoIndex + 1) % videoFiles.length;
     const nextVideo = document.createElement('video');
     nextVideo.src = videoFiles[nextIndex];
-    nextVideo.preload = 'auto'; // Preload full video
+    nextVideo.preload = 'auto';
     nextVideo.muted = true;
     nextVideo.playsInline = true;
     nextVideo.load();
 
-    // Preload the video after next for even smoother transitions
+    // Preload the video after next
     const afterNextIndex = (currentVideoIndex + 2) % videoFiles.length;
     const afterNextVideo = document.createElement('video');
     afterNextVideo.src = videoFiles[afterNextIndex];
-    afterNextVideo.preload = 'metadata'; // Preload metadata for the third video
+    afterNextVideo.preload = 'auto'; // Full preload for third video too
     afterNextVideo.muted = true;
     afterNextVideo.playsInline = true;
     afterNextVideo.load();
+
+    // 5-second early preloading timer
+    const earlyPreloadTimer = setTimeout(() => {
+      console.log('⏰ 5 seconds remaining - Starting early preload...');
+      
+      // Preload next video again to ensure it's ready
+      const nextVideoEarly = document.createElement('video');
+      nextVideoEarly.src = videoFiles[nextIndex];
+      nextVideoEarly.preload = 'auto';
+      nextVideoEarly.muted = true;
+      nextVideoEarly.playsInline = true;
+      nextVideoEarly.load();
+      
+      // Preload the video after next
+      const afterNextVideoEarly = document.createElement('video');
+      afterNextVideoEarly.src = videoFiles[afterNextIndex];
+      afterNextVideoEarly.preload = 'auto';
+      afterNextVideoEarly.muted = true;
+      afterNextVideoEarly.playsInline = true;
+      afterNextVideoEarly.load();
+      
+      console.log(`🎯 Early preload completed for videos ${nextIndex + 1} and ${afterNextIndex + 1}`);
+    }, 5000); // 5 seconds before video ends (10s total - 5s = 5s remaining)
     
-    // Clean up previous preloaded videos to save memory
+    // Clean up previous preloaded videos and timer
     return () => {
+      clearTimeout(earlyPreloadTimer);
       if (currentVideo) {
         currentVideo.src = '';
         currentVideo.load();
