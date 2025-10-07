@@ -134,30 +134,36 @@ const Competitions: React.FC<CompetitionsProps> = ({ isDarkMode }) => {
               }`}
             >
               {/* Header */}
-              <div className={`p-6 bg-gradient-to-r ${competition.color} text-white`}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    {competition.icon}
-                    <div>
-                      <h3 className="text-xl font-bold font-urbanist">{competition.title}</h3>
-                      <div className="flex items-center gap-2 text-sm opacity-90">
-                        {getPlatformIcon(competition.platform)}
-                        <span>{competition.platform}</span>
-                        <span>•</span>
+              <div className={`p-4 sm:p-6 bg-gradient-to-r ${competition.color} text-white`}>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-1">
+                      {competition.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg sm:text-xl font-bold font-urbanist leading-tight break-words">
+                        {competition.title}
+                      </h3>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm opacity-90 mt-2">
+                        <div className="flex items-center gap-2">
+                          {getPlatformIcon(competition.platform)}
+                          <span>{competition.platform}</span>
+                        </div>
+                        <span className="hidden sm:inline">•</span>
                         <span>{competition.date}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-yellow-300" />
-                    <span className="text-sm font-medium">Active</span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300" />
+                    <span className="text-xs sm:text-sm font-medium">Active</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 text-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     {getTypeIcon(competition.type)}
-                    <span>{competition.type}</span>
+                    <span className="break-words">{competition.type}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
@@ -167,8 +173,8 @@ const Competitions: React.FC<CompetitionsProps> = ({ isDarkMode }) => {
               </div>
 
               {/* Content */}
-              <div className="p-6">
-                <p className={`text-sm mb-4 ${
+              <div className="p-4 sm:p-6">
+                <p className={`text-sm mb-4 leading-relaxed ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
                 }`}>
                   {competition.description}
@@ -185,8 +191,8 @@ const Competitions: React.FC<CompetitionsProps> = ({ isDarkMode }) => {
 
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold mb-2 text-neon-purple">Key Approaches:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {competition.approach.slice(0, 3).map((approach, idx) => (
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                    {competition.approach.slice(0, 2).map((approach, idx) => (
                       <span
                         key={idx}
                         className={`px-2 py-1 rounded text-xs ${
@@ -196,18 +202,18 @@ const Competitions: React.FC<CompetitionsProps> = ({ isDarkMode }) => {
                         {approach}
                       </span>
                     ))}
-                    {competition.approach.length > 3 && (
+                    {competition.approach.length > 2 && (
                       <span className={`px-2 py-1 rounded text-xs ${
                         isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                       }`}>
-                        +{competition.approach.length - 3} more
+                        +{competition.approach.length - 2} more
                       </span>
                     )}
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <motion.button
                     onClick={() => setSelectedCompetition(competition)}
                     whileHover={{ scale: 1.05 }}
@@ -283,24 +289,28 @@ const Competitions: React.FC<CompetitionsProps> = ({ isDarkMode }) => {
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  {selectedCompetition.icon}
-                  <div>
-                    <h3 className="text-2xl font-bold gradient-text font-urbanist">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {selectedCompetition.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl sm:text-2xl font-bold gradient-text font-urbanist leading-tight break-words">
                       {selectedCompetition.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      {getPlatformIcon(selectedCompetition.platform)}
-                      <span>{selectedCompetition.platform}</span>
-                      <span>•</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-gray-500 mt-2">
+                      <div className="flex items-center gap-2">
+                        {getPlatformIcon(selectedCompetition.platform)}
+                        <span>{selectedCompetition.platform}</span>
+                      </div>
+                      <span className="hidden sm:inline">•</span>
                       <span>{selectedCompetition.date}</span>
                     </div>
                   </div>
                 </div>
                 <button
                   onClick={() => setSelectedCompetition(null)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0 self-start sm:self-auto"
                 >
                   <span className="text-2xl">&times;</span>
                 </button>
