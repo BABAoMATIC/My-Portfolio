@@ -124,7 +124,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
         setIsVideoLoading(true); // Set loading state
         return nextIndex;
       });
-    }, 10000); // Change video every 10 seconds
+    }, 40000); // Change video every 40 seconds
 
     return () => clearInterval(interval);
   }, [videoFiles]);
@@ -135,14 +135,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     setIsVideoLoading(true);
   }, [currentVideoIndex]);
 
-  // Enhanced preloading system with 5-second early preloading
+  // Enhanced preloading system optimized for Vercel deployment
   useEffect(() => {
-    // Preload current video fully
+    // Preload current video with quality optimization
     const currentVideo = document.createElement('video');
     currentVideo.src = videoFiles[currentVideoIndex];
     currentVideo.preload = 'auto';
     currentVideo.muted = true;
     currentVideo.playsInline = true;
+    currentVideo.crossOrigin = 'anonymous';
     currentVideo.load();
 
     // Preload next video
@@ -152,27 +153,40 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     nextVideo.preload = 'auto';
     nextVideo.muted = true;
     nextVideo.playsInline = true;
+    nextVideo.crossOrigin = 'anonymous';
     nextVideo.load();
 
     // Preload the video after next
     const afterNextIndex = (currentVideoIndex + 2) % videoFiles.length;
     const afterNextVideo = document.createElement('video');
     afterNextVideo.src = videoFiles[afterNextIndex];
-    afterNextVideo.preload = 'auto'; // Full preload for third video too
+    afterNextVideo.preload = 'auto';
     afterNextVideo.muted = true;
     afterNextVideo.playsInline = true;
+    afterNextVideo.crossOrigin = 'anonymous';
     afterNextVideo.load();
 
-    // 5-second early preloading timer
+    // Preload the video after that for even smoother transitions
+    const fourthIndex = (currentVideoIndex + 3) % videoFiles.length;
+    const fourthVideo = document.createElement('video');
+    fourthVideo.src = videoFiles[fourthIndex];
+    fourthVideo.preload = 'metadata'; // Metadata preload for fourth video
+    fourthVideo.muted = true;
+    fourthVideo.playsInline = true;
+    fourthVideo.crossOrigin = 'anonymous';
+    fourthVideo.load();
+
+    // 5-second early preloading timer (35 seconds into 40-second video)
     const earlyPreloadTimer = setTimeout(() => {
-      console.log('⏰ 5 seconds remaining - Starting early preload...');
+      console.log('⏰ 5 seconds remaining - Starting aggressive early preload...');
       
-      // Preload next video again to ensure it's ready
+      // Aggressive preloading for next video
       const nextVideoEarly = document.createElement('video');
       nextVideoEarly.src = videoFiles[nextIndex];
       nextVideoEarly.preload = 'auto';
       nextVideoEarly.muted = true;
       nextVideoEarly.playsInline = true;
+      nextVideoEarly.crossOrigin = 'anonymous';
       nextVideoEarly.load();
       
       // Preload the video after next
@@ -181,10 +195,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
       afterNextVideoEarly.preload = 'auto';
       afterNextVideoEarly.muted = true;
       afterNextVideoEarly.playsInline = true;
+      afterNextVideoEarly.crossOrigin = 'anonymous';
       afterNextVideoEarly.load();
       
-      console.log(`🎯 Early preload completed for videos ${nextIndex + 1} and ${afterNextIndex + 1}`);
-    }, 5000); // 5 seconds before video ends (10s total - 5s = 5s remaining)
+      // Preload the fourth video
+      const fourthVideoEarly = document.createElement('video');
+      fourthVideoEarly.src = videoFiles[fourthIndex];
+      fourthVideoEarly.preload = 'auto';
+      fourthVideoEarly.muted = true;
+      fourthVideoEarly.playsInline = true;
+      fourthVideoEarly.crossOrigin = 'anonymous';
+      fourthVideoEarly.load();
+      
+      console.log(`🎯 Aggressive early preload completed for videos ${nextIndex + 1}, ${afterNextIndex + 1}, and ${fourthIndex + 1}`);
+    }, 35000); // 5 seconds before video ends (40s total - 5s = 35s remaining)
     
     // Clean up previous preloaded videos and timer
     return () => {
@@ -200,6 +224,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
       if (afterNextVideo) {
         afterNextVideo.src = '';
         afterNextVideo.load();
+      }
+      if (fourthVideo) {
+        fourthVideo.src = '';
+        fourthVideo.load();
       }
     };
   }, [currentVideoIndex, videoFiles]);
@@ -252,9 +280,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                   videoRef.current.play().catch(console.log);
                 }
               }}
+              onCanPlayThrough={() => {
+                // Video can play through without stopping
+                setIsVideoLoading(false);
+                console.log(`✅ Video ${currentVideoIndex + 1} fully loaded and ready`);
+              }}
               onWaiting={() => {
                 // Video is buffering
                 setIsVideoLoading(true);
+                console.log(`⏳ Video ${currentVideoIndex + 1} buffering...`);
               }}
               onError={(e) => {
                 console.error('Video loading error:', e);
@@ -267,6 +301,19 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               }}
               onLoadStart={() => {
                 setIsVideoLoading(true);
+                console.log(`🔄 Starting to load video ${currentVideoIndex + 1}`);
+              }}
+              onProgress={() => {
+                // Video is downloading/buffering
+                if (videoRef.current) {
+                  const buffered = videoRef.current.buffered;
+                  if (buffered.length > 0) {
+                    const bufferedEnd = buffered.end(buffered.length - 1);
+                    const duration = videoRef.current.duration;
+                    const bufferedPercent = (bufferedEnd / duration) * 100;
+                    console.log(`📊 Video ${currentVideoIndex + 1} buffered: ${bufferedPercent.toFixed(1)}%`);
+                  }
+                }
               }}
               style={{
                 width: '100%',

@@ -27,10 +27,11 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
       '/videos/hero11.webm'
     ];
 
-    // Aggressive video preloading during loading screen
+    // Aggressive video preloading optimized for Vercel deployment
     const preloadAllVideos = () => {
-      setPreloadStatus('Preloading videos...');
+      setPreloadStatus('Preloading videos for Vercel deployment...');
       let loadedCount = 0;
+      let totalSize = 0;
       
       videoFiles.forEach((videoSrc, index) => {
         const video = document.createElement('video');
@@ -38,18 +39,40 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
         video.preload = 'auto';
         video.muted = true;
         video.playsInline = true;
+        video.crossOrigin = 'anonymous';
         video.load();
         
         preloadedVideos.current.push(video);
         
         video.addEventListener('canplaythrough', () => {
           loadedCount++;
-          setPreloadStatus(`Preloaded ${loadedCount}/${videoFiles.length} videos`);
+          setPreloadStatus(`Preloaded ${loadedCount}/${videoFiles.length} videos (${((loadedCount/videoFiles.length)*100).toFixed(0)}%)`);
           console.log(`✅ Preloaded video ${index + 1}: ${videoSrc}`);
+          
+          // Track total buffered size
+          if (video.buffered.length > 0) {
+            const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+            totalSize += bufferedEnd;
+            console.log(`📊 Total buffered: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+          }
+        });
+        
+        video.addEventListener('progress', () => {
+          if (video.buffered.length > 0) {
+            const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+            const duration = video.duration;
+            const bufferedPercent = (bufferedEnd / duration) * 100;
+            console.log(`📈 Video ${index + 1} buffered: ${bufferedPercent.toFixed(1)}%`);
+          }
         });
         
         video.addEventListener('error', (e) => {
           console.warn(`⚠️ Failed to preload video ${index + 1}: ${videoSrc}`, e);
+          // Continue with other videos even if one fails
+        });
+        
+        video.addEventListener('loadstart', () => {
+          console.log(`🔄 Starting preload for video ${index + 1}: ${videoSrc}`);
         });
       });
     };
