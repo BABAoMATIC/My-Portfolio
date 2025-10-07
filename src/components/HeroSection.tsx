@@ -77,17 +77,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoFiles = useMemo(() => [
-    'https://drive.google.com/uc?export=download&id=158NG65OktF6lFOyen2bk6QrQEmr9RpkK',
-    'https://drive.google.com/uc?export=download&id=1gKdb6wOLAjnH1X3ReOsNDR-Cuqo5Y5Rb',
-    'https://drive.google.com/uc?export=download&id=15iylB72VB0KSDmBhaQpMyrTD8gcqsGwI',
-    'https://drive.google.com/uc?export=download&id=1MF1y61VWKE1G8fMCAd6V4aTWMIVFaTjd',
-    'https://drive.google.com/uc?export=download&id=1uZFRH8MligbzGvgMIuKnrLTS79_CiUxm',
-    'https://drive.google.com/uc?export=download&id=1qXv2MnNGRsMRtlqYH0TjGQ_BBkorUkb6',
-    'https://drive.google.com/uc?export=download&id=1EqJgw6ZS2VG65MlRlCZiW9zvLKGXHTYX',
-    'https://drive.google.com/uc?export=download&id=1YxiyFfgaqdojxr9uSkOH5QEZ10gHO8M-',
-    'https://drive.google.com/uc?export=download&id=1m6PnspO7ZSkeS77fqhjp52AyUDm75_fV',
-    'https://drive.google.com/uc?export=download&id=1hqTP-IQjXc_T7Z89zrGN8diP9tdod4pV',
-    'https://drive.google.com/uc?export=download&id=1pmLzFnGqS5oQvHZk55RS3nOvXVd_ag1z'
+    '/videos/hero1.webm',
+    '/videos/hero2.webm',
+    '/videos/hero3.webm',
+    '/videos/hero4.webm',
+    '/videos/hero5.webm',
+    '/videos/hero6.webm',
+    '/videos/hero7.webm',
+    '/videos/hero8.webm',
+    '/videos/hero9.webm',
+    '/videos/hero10.webm',
+    '/videos/hero11.webm'
   ], []);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
         setIsVideoLoading(true); // Set loading state
         return nextIndex;
       });
-    }, 40000); // Change video every 40 seconds
+    }, 10000); // Change video every 10 seconds
 
     return () => clearInterval(interval);
   }, [videoFiles]);
@@ -112,7 +112,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     nextVideo.preload = 'metadata'; // Only preload metadata for better performance
     nextVideo.muted = true;
     nextVideo.playsInline = true;
-    nextVideo.crossOrigin = 'anonymous'; // Handle CORS for Google Drive videos
     
     // Clean up previous preloaded videos to save memory
     return () => {
@@ -146,13 +145,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
             <motion.video
               key={currentVideoIndex}
               ref={videoRef}
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
               autoPlay
               muted
               loop
               playsInline
               preload="auto"
-              crossOrigin="anonymous"
               poster="" // No poster to reduce initial load
               initial={{ opacity: 1, scale: 1 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -181,7 +179,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 willChange: 'transform, opacity' // Optimize for animations
               }}
             >
-              <source src={videoFiles[currentVideoIndex]} type="video/mp4" />
               <source src={videoFiles[currentVideoIndex]} type="video/webm" />
             </motion.video>
           ) : (
@@ -192,17 +189,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                filter: 'brightness(0.8) contrast(1.1)'
-              }}
+              className="absolute inset-0 w-full h-full bg-black"
             />
           )}
         </AnimatePresence>
         
-        {/* Enhanced Dark Overlay with Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
+        {/* Dark Overlay - 40% opacity */}
+        <div className="absolute inset-0 bg-black/40" />
         
         {/* Loading Indicator */}
         {isVideoLoading && !videoError && (
