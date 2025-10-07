@@ -73,7 +73,7 @@ const TypingAnimation: React.FC<{ text: string; speed?: number; eraseSpeed?: num
 const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [videoError, setVideoError] = useState(false);
-  const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isVideoLoading, setIsVideoLoading] = useState(false); // No initial loading state
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoFiles = useMemo(() => [
@@ -91,30 +91,32 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   ], []);
 
   useEffect(() => {
-    // Aggressive preloading of ALL videos during initial load
-    const preloadAllVideos = () => {
-      console.log('🚀 Starting aggressive preloading of all videos...');
-      videoFiles.forEach((videoSrc, index) => {
+    // Immediate video preloading without delays
+    const preloadVideosImmediately = () => {
+      console.log('🚀 Starting immediate video preloading...');
+      
+      // Preload first few videos immediately
+      for (let i = 0; i < Math.min(3, videoFiles.length); i++) {
         const video = document.createElement('video');
-        video.src = videoSrc;
-        video.preload = 'auto'; // Full preload for ALL videos
+        video.src = videoFiles[i];
+        video.preload = 'auto';
         video.muted = true;
         video.playsInline = true;
+        video.crossOrigin = 'anonymous';
         video.load();
         
-        // Add event listeners to track loading progress
         video.addEventListener('canplaythrough', () => {
-          console.log(`✅ Video ${index + 1} fully preloaded: ${videoSrc}`);
+          console.log(`✅ Video ${i + 1} ready: ${videoFiles[i]}`);
         });
         
         video.addEventListener('error', (e) => {
-          console.warn(`⚠️ Failed to preload video ${index + 1}: ${videoSrc}`, e);
+          console.warn(`⚠️ Video ${i + 1} failed: ${videoFiles[i]}`, e);
         });
-      });
+      }
     };
 
-    // Start aggressive preloading immediately
-    preloadAllVideos();
+    // Start preloading immediately
+    preloadVideosImmediately();
 
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
@@ -132,7 +134,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   // Reset error state when video index changes
   useEffect(() => {
     setVideoError(false);
-    setIsVideoLoading(true);
+    setIsVideoLoading(false); // No loading state
   }, [currentVideoIndex]);
 
   // Enhanced preloading system optimized for Vercel deployment
@@ -300,8 +302,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 }, 1000);
               }}
               onLoadStart={() => {
-                setIsVideoLoading(true);
+                // Start playing immediately when loading starts
+                setIsVideoLoading(false);
                 console.log(`🔄 Starting to load video ${currentVideoIndex + 1}`);
+                if (videoRef.current) {
+                  videoRef.current.play().catch(console.log);
+                }
               }}
               onProgress={() => {
                 // Video is downloading/buffering
@@ -349,12 +355,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
         {/* Dark Overlay - 40% opacity */}
         <div className="absolute inset-0 bg-black/40" />
         
-        {/* Loading Indicator */}
-        {isVideoLoading && !videoError && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin" />
-          </div>
-        )}
+        {/* No loading indicator - videos start immediately */}
         
         {/* Subtle Animated Overlay */}
         <motion.div
