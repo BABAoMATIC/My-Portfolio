@@ -75,6 +75,10 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
           // Continue with other videos even if one fails
         });
         
+        video.addEventListener('abort', () => {
+          console.log(`⏹️ Video ${index + 1} aborted: ${videoSrc}`);
+        });
+        
         video.addEventListener('loadstart', () => {
           console.log(`🔄 Starting preload for video ${index + 1}: ${videoSrc}`);
         });

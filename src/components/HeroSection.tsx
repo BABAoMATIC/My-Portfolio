@@ -111,6 +111,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
         video.addEventListener('error', (e) => {
           console.warn(`⚠️ Video ${i + 1} failed: ${videoFiles[i]}`, e);
         });
+        
+        video.addEventListener('abort', () => {
+          console.log(`⏹️ Video ${i + 1} aborted: ${videoFiles[i]}`);
+        });
       }
     };
 
@@ -307,34 +311,38 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 setIsVideoLoading(true);
                 console.log(`⏳ Video ${currentVideoIndex + 1} buffering...`);
               }}
-              onError={(e) => {
-                console.error('Video loading error:', e);
-                console.log(`❌ Failed to load video ${currentVideoIndex + 1}: ${videoFiles[currentVideoIndex]}`);
-                console.log(`🔄 Retry count: ${retryCount}`);
-                
-                setVideoError(true);
-                setIsVideoLoading(false);
-                
-                // Retry logic: try same video up to 2 times, then move to next
-                if (retryCount < 2) {
-                  setTimeout(() => {
-                    console.log(`🔄 Retrying video ${currentVideoIndex + 1} (attempt ${retryCount + 1})...`);
-                    setRetryCount(prev => prev + 1);
-                    setVideoError(false);
-                    // Force reload the video
-                    if (videoRef.current) {
-                      videoRef.current.load();
-                    }
-                  }, 3000);
-                } else {
-                  // After 2 retries, move to next video
-                  setTimeout(() => {
-                    console.log(`🔄 Moving to next video after ${retryCount} retries...`);
-                    setRetryCount(0);
-                    setCurrentVideoIndex((prev) => (prev + 1) % videoFiles.length);
-                  }, 2000);
-                }
-              }}
+                onError={(e) => {
+                  console.error('Video loading error:', e);
+                  console.log(`❌ Failed to load video ${currentVideoIndex + 1}: ${videoFiles[currentVideoIndex]}`);
+                  console.log(`🔄 Retry count: ${retryCount}`);
+                  
+                  setVideoError(true);
+                  setIsVideoLoading(false);
+                  
+                  // Retry logic: try same video up to 2 times, then move to next
+                  if (retryCount < 2) {
+                    setTimeout(() => {
+                      console.log(`🔄 Retrying video ${currentVideoIndex + 1} (attempt ${retryCount + 1})...`);
+                      setRetryCount(prev => prev + 1);
+                      setVideoError(false);
+                      // Force reload the video
+                      if (videoRef.current) {
+                        videoRef.current.load();
+                      }
+                    }, 3000);
+                  } else {
+                    // After 2 retries, move to next video
+                    setTimeout(() => {
+                      console.log(`🔄 Moving to next video after ${retryCount} retries...`);
+                      setRetryCount(0);
+                      setCurrentVideoIndex((prev) => (prev + 1) % videoFiles.length);
+                    }, 2000);
+                  }
+                }}
+                onAbort={() => {
+                  console.log(`⏹️ Video ${currentVideoIndex + 1} aborted`);
+                  // Don't treat abort as error, just log it
+                }}
                 onLoadStart={() => {
                   // Start playing immediately when loading starts
                   setIsVideoLoading(false);
