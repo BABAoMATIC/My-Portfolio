@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-// import PreloadAnimation from './components/PreloadAnimation'; // Removed - no loading screen
+import PreloadAnimation from './components/PreloadAnimation';
 import HeroSection from './components/HeroSection';
 import AboutMe from './components/AboutMe';
 import Skills from './components/Skills';
@@ -19,7 +19,7 @@ import PerformanceMonitor from './components/PerformanceMonitor';
 import Footer from './components/Footer';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(false); // No loading screen
+  const [isLoading, setIsLoading] = useState(true); // Show loading screen
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -27,8 +27,12 @@ function App() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setIsDarkMode(prefersDark);
     
-    // No loading screen - start immediately
-    setIsLoading(false);
+    // Show loading screen for 3 seconds while videos preload
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const toggleTheme = () => {
@@ -48,7 +52,10 @@ function App() {
       <div className={`min-h-screen transition-colors duration-300 ${
         isDarkMode ? 'dark bg-dark-bg text-dark-text' : 'bg-light-bg text-light-text'
       }`}>
-        {/* No loading screen - start immediately */}
+        <AnimatePresence>
+          {isLoading && <PreloadAnimation />}
+        </AnimatePresence>
+        
         {!isLoading && (
           <motion.div
             initial={{ opacity: 0 }}

@@ -29,7 +29,7 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
 
     // Aggressive video preloading optimized for Vercel deployment
     const preloadAllVideos = () => {
-      setPreloadStatus('Preloading videos for Vercel deployment...');
+      setPreloadStatus('Loading portfolio videos...');
       let loadedCount = 0;
       let totalSize = 0;
       
@@ -46,7 +46,8 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
         
         video.addEventListener('canplaythrough', () => {
           loadedCount++;
-          setPreloadStatus(`Preloaded ${loadedCount}/${videoFiles.length} videos (${((loadedCount/videoFiles.length)*100).toFixed(0)}%)`);
+          const percentage = ((loadedCount/videoFiles.length)*100).toFixed(0);
+          setPreloadStatus(`Preloaded ${loadedCount}/${videoFiles.length} videos (${percentage}%)`);
           console.log(`✅ Preloaded video ${index + 1}: ${videoSrc}`);
           
           // Track total buffered size
@@ -54,6 +55,11 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
             const bufferedEnd = video.buffered.end(video.buffered.length - 1);
             totalSize += bufferedEnd;
             console.log(`📊 Total buffered: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+          }
+          
+          // Update progress bar based on video loading
+          if (loadedCount === videoFiles.length) {
+            setPreloadStatus('All videos loaded! Starting portfolio...');
           }
         });
         
@@ -103,15 +109,15 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
   }, []);
 
   const startProgressAnimation = () => {
-    // Simple progress animation using setInterval
+    // Progress animation that syncs with video loading
     let currentProgress = 0;
     const interval = setInterval(() => {
-      currentProgress += 2;
-      setProgress(currentProgress);
-      if (currentProgress >= 100) {
+      currentProgress += 1.5; // Slower progress to sync with video loading
+      setProgress(Math.min(currentProgress, 95)); // Don't reach 100% until videos are loaded
+      if (currentProgress >= 95) {
         clearInterval(interval);
       }
-    }, 40);
+    }, 50);
   };
 
   return (
