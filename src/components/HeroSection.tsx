@@ -104,7 +104,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   useEffect(() => {
     const nextIndex = (currentVideoIndex + 1) % videoFiles.length;
     const nextVideo = document.createElement('video');
-    nextVideo.src = `/assets/videos/${videoFiles[nextIndex]}`;
+    nextVideo.src = `./assets/videos/${videoFiles[nextIndex]}`;
     nextVideo.preload = 'metadata'; // Only preload metadata for better performance
     nextVideo.muted = true;
     nextVideo.playsInline = true;
@@ -120,7 +120,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
 
   const handleDownloadResume = () => {
     const link = document.createElement('a');
-    link.href = '/assets/Nishit bhardwaj resume.pdf';
+    link.href = './assets/Nishit bhardwaj resume.pdf';
     link.download = 'Nishit_Bhardwaj_Resume.pdf';
     link.click();
   };
@@ -168,8 +168,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               willChange: 'transform, opacity' // Optimize for animations
             }}
           >
-            <source src={`/assets/videos/${videoFiles[currentVideoIndex]}`} type="video/mp4" />
-            <source src={`/assets/videos/${videoFiles[currentVideoIndex]}`} type="video/webm" />
+            <source src={`./assets/videos/${videoFiles[currentVideoIndex]}`} type="video/mp4" />
+            <source src={`./assets/videos/${videoFiles[currentVideoIndex]}`} type="video/webm" />
           </motion.video>
         </AnimatePresence>
         

@@ -169,39 +169,101 @@ const AboutMe: React.FC<AboutMeProps> = ({ isDarkMode }) => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5"
+            className="space-y-6"
           >
-            {stats.map((stat, index) => (
+            {/* Top Row - Main Stats */}
+            <div className="grid grid-cols-2 gap-4">
               <motion.div
-                key={stat.label}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 * index }}
+                transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
-                className={`p-3 sm:p-4 lg:p-5 rounded-xl card-hover min-h-[120px] sm:min-h-[140px] ${
+                className={`p-4 sm:p-6 rounded-xl card-hover ${
                   isDarkMode 
                     ? 'glass-morphism-dark' 
                     : 'bg-white shadow-lg border border-gray-100'
                 }`}
               >
-                <div className="flex flex-col items-center text-center h-full">
-                  <div className={`${stat.color} mb-2 sm:mb-3 flex-shrink-0`}>
-                    {stat.icon}
+                <div className="flex items-center space-x-4">
+                  <div className={`${stats[0].color} flex-shrink-0`}>
+                    {stats[0].icon}
                   </div>
-                  <div className="mb-2 sm:mb-3 flex-grow flex items-center justify-center">
-                    <div className={`text-xl sm:text-2xl lg:text-3xl font-bold ${stat.color} leading-tight`}>
-                      <AnimatedNumber value={stat.value} />
-                      <span className="text-sm sm:text-base lg:text-lg">{stat.suffix}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-2xl sm:text-3xl font-bold ${stats[0].color} mb-1`}>
+                      <AnimatedNumber value={stats[0].value} />
+                      <span className="text-lg">{stats[0].suffix}</span>
                     </div>
+                    <p className={`text-sm font-medium truncate ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                      {stats[0].label}
+                    </p>
                   </div>
-                  <p className={`text-xs sm:text-sm font-medium leading-tight ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    {stat.label}
-                  </p>
                 </div>
               </motion.div>
-            ))}
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className={`p-4 sm:p-6 rounded-xl card-hover ${
+                  isDarkMode 
+                    ? 'glass-morphism-dark' 
+                    : 'bg-white shadow-lg border border-gray-100'
+                }`}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className={`${stats[1].color} flex-shrink-0`}>
+                    {stats[1].icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-2xl sm:text-3xl font-bold ${stats[1].color} mb-1`}>
+                      <AnimatedNumber value={stats[1].value} />
+                      <span className="text-lg">{stats[1].suffix}</span>
+                    </div>
+                    <p className={`text-sm font-medium truncate ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                      {stats[1].label}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Bottom Row - Medals Stats */}
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              {stats.slice(2).map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 + (0.1 * index) }}
+                  viewport={{ once: true }}
+                  className={`p-3 sm:p-4 rounded-xl card-hover ${
+                    isDarkMode 
+                      ? 'glass-morphism-dark' 
+                      : 'bg-white shadow-lg border border-gray-100'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className={`${stat.color} mb-2 flex justify-center`}>
+                      {stat.icon}
+                    </div>
+                    <div className={`text-xl sm:text-2xl font-bold ${stat.color} mb-1`}>
+                      <AnimatedNumber value={stat.value} />
+                      <span className="text-sm">{stat.suffix}</span>
+                    </div>
+                    <p className={`text-xs font-medium leading-tight ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                      {stat.label.split(' ')[0]}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </motion.div>
 
