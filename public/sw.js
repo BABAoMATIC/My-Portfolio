@@ -110,30 +110,53 @@ self.addEventListener('activate', (event) => {
 
 // Message event handler to prevent async response errors
 self.addEventListener('message', (event) => {
-  // Handle different message types
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  
-  // Always respond immediately to prevent async response errors
-  if (event.ports && event.ports[0]) {
-    try {
-      event.ports[0].postMessage({ 
-        success: true, 
-        type: 'response',
-        timestamp: Date.now()
-      });
-    } catch (error) {
-      console.log('Error posting message:', error);
+  try {
+    // Handle different message types
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+      self.skipWaiting();
     }
-  }
-  
-  // Handle extension messages
-  if (event.data && event.data.source === 'extension') {
-    // Respond to extension messages immediately
-    event.source.postMessage({ 
-      success: true, 
-      message: 'Service worker received message' 
-    });
+    
+    // Always respond immediately to prevent async response errors
+    if (event.ports && event.ports[0]) {
+      try {
+        event.ports[0].postMessage({ 
+          success: true, 
+          type: 'response',
+          timestamp: Date.now()
+        });
+      } catch (error) {
+        console.log('Error posting message:', error);
+      }
+    }
+    
+    // Handle extension messages
+    if (event.data && event.data.source === 'extension') {
+      try {
+        event.source.postMessage({ 
+          success: true, 
+          message: 'Service worker received message' 
+        });
+      } catch (error) {
+        console.log('Extension message error:', error);
+      }
+    }
+    
+    // Handle any other message types
+    if (event.data && event.data.type) {
+      // Respond to any message type immediately
+      if (event.ports && event.ports[0]) {
+        try {
+          event.ports[0].postMessage({ 
+            success: true, 
+            type: 'acknowledged',
+            timestamp: Date.now()
+          });
+        } catch (error) {
+          console.log('Port message error:', error);
+        }
+      }
+    }
+  } catch (error) {
+    console.log('Message handler error:', error);
   }
 });

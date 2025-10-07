@@ -91,6 +91,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   ], []);
 
   useEffect(() => {
+    // Initial preloading of first few videos
+    const preloadInitialVideos = () => {
+      for (let i = 0; i < Math.min(3, videoFiles.length); i++) {
+        const video = document.createElement('video');
+        video.src = videoFiles[i];
+        video.preload = i === 0 ? 'auto' : 'metadata'; // Full preload for first video
+        video.muted = true;
+        video.playsInline = true;
+        video.load();
+      }
+    };
+
+    // Start initial preloading
+    preloadInitialVideos();
+
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
         const nextIndex = (prev + 1) % videoFiles.length;
@@ -110,20 +125,47 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     setIsVideoLoading(true);
   }, [currentVideoIndex]);
 
-  // Optimized preloading for better performance
+  // Enhanced preloading system to prevent buffering
   useEffect(() => {
+    // Preload current video fully
+    const currentVideo = document.createElement('video');
+    currentVideo.src = videoFiles[currentVideoIndex];
+    currentVideo.preload = 'auto'; // Preload full video
+    currentVideo.muted = true;
+    currentVideo.playsInline = true;
+    currentVideo.load();
+
+    // Preload next video
     const nextIndex = (currentVideoIndex + 1) % videoFiles.length;
     const nextVideo = document.createElement('video');
     nextVideo.src = videoFiles[nextIndex];
-    nextVideo.preload = 'metadata'; // Only preload metadata for better performance
+    nextVideo.preload = 'auto'; // Preload full video
     nextVideo.muted = true;
     nextVideo.playsInline = true;
+    nextVideo.load();
+
+    // Preload the video after next for even smoother transitions
+    const afterNextIndex = (currentVideoIndex + 2) % videoFiles.length;
+    const afterNextVideo = document.createElement('video');
+    afterNextVideo.src = videoFiles[afterNextIndex];
+    afterNextVideo.preload = 'metadata'; // Preload metadata for the third video
+    afterNextVideo.muted = true;
+    afterNextVideo.playsInline = true;
+    afterNextVideo.load();
     
     // Clean up previous preloaded videos to save memory
     return () => {
+      if (currentVideo) {
+        currentVideo.src = '';
+        currentVideo.load();
+      }
       if (nextVideo) {
         nextVideo.src = '';
         nextVideo.load();
+      }
+      if (afterNextVideo) {
+        afterNextVideo.src = '';
+        afterNextVideo.load();
       }
     };
   }, [currentVideoIndex, videoFiles]);
@@ -157,7 +199,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               loop
               playsInline
               preload="auto"
-              poster="" // No poster to reduce initial load
+              poster=""
+              crossOrigin="anonymous"
               initial={{ opacity: 1, scale: 1 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1 }}
@@ -167,6 +210,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 if (videoRef.current) {
                   videoRef.current.play().catch(console.log);
                 }
+              }}
+              onCanPlay={() => {
+                // Video is ready to play without buffering
+                setIsVideoLoading(false);
+                if (videoRef.current) {
+                  videoRef.current.play().catch(console.log);
+                }
+              }}
+              onWaiting={() => {
+                // Video is buffering
+                setIsVideoLoading(true);
               }}
               onError={(e) => {
                 console.error('Video loading error:', e);

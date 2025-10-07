@@ -42,37 +42,68 @@
     
     <title>Nishit Bhardwaj - Full Stack Developer & Data Analyst</title>
     
-    <!-- Prevent extension conflicts -->
+    <!-- Prevent extension conflicts and async response errors -->
     <script>
+      // Global error handler for async response errors
+      window.addEventListener('error', function(event) {
+        if (event.error && event.error.message && 
+            event.error.message.includes('message channel closed')) {
+          event.preventDefault();
+          console.log('Prevented async response error:', event.error);
+          return false;
+        }
+      });
+
+      // Handle unhandled promise rejections
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.message && 
+            (event.reason.message.includes('message channel closed') ||
+             event.reason.message.includes('A listener indicated an asynchronous response'))) {
+          event.preventDefault();
+          console.log('Prevented async response error:', event.reason);
+          return false;
+        }
+      });
+
       // Handle extension message conflicts
       window.addEventListener('message', function(event) {
         if (event.source !== window) {
           // Handle extension messages
           if (event.data && event.data.source === 'extension') {
-            event.source.postMessage({ 
-              success: true, 
-              message: 'Message received' 
-            });
+            try {
+              event.source.postMessage({ 
+                success: true, 
+                message: 'Message received' 
+              });
+            } catch (error) {
+              console.log('Extension message error handled:', error);
+            }
           }
         }
       });
-      
-      // Prevent async response errors
-      window.addEventListener('unhandledrejection', function(event) {
-        if (event.reason && event.reason.message && 
-            event.reason.message.includes('message channel closed')) {
-          event.preventDefault();
-          console.log('Prevented async response error:', event.reason);
-        }
-      });
-      
+
       // Prevent Service Worker registration errors
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
           for(let registration of registrations) {
             registration.unregister();
           }
+        }).catch(function(error) {
+          console.log('Service worker cleanup error handled:', error);
         });
+      }
+
+      // Additional protection for Chrome extensions
+      if (window.chrome && window.chrome.runtime) {
+        try {
+          window.chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+            // Always respond immediately to prevent async response errors
+            sendResponse({ success: true });
+            return true;
+          });
+        } catch (error) {
+          console.log('Chrome extension listener error handled:', error);
+        }
       }
     </script>
   </head>
