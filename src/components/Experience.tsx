@@ -159,7 +159,7 @@ const Experience: React.FC<ExperienceProps> = ({ isDarkMode }) => {
         {/* Timeline */}
         <div className="relative">
           {/* Timeline Line */}
-          <div className={`absolute left-12 top-0 bottom-0 w-0.5 ${
+          <div className={`absolute left-16 top-0 bottom-0 w-0.5 ${
             isDarkMode ? 'bg-gradient-to-b from-neon-purple to-neon-cyan' : 'bg-gradient-to-b from-gray-300 to-gray-500'
           }`} />
 
@@ -175,12 +175,12 @@ const Experience: React.FC<ExperienceProps> = ({ isDarkMode }) => {
               >
                 {/* Timeline Dot */}
                 <motion.div
-                  whileHover={{ scale: 1.2 }}
-                  className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center ${
-                    isDarkMode ? 'bg-dark-bg border-4 border-neon-purple' : 'bg-light-bg border-4 border-neon-purple'
+                  whileHover={{ scale: 1.1 }}
+                  className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center ${
+                    isDarkMode ? 'bg-dark-bg border-3 border-neon-purple' : 'bg-light-bg border-3 border-neon-purple'
                   } shadow-lg`}
                 >
-                  <div className={experience.color}>
+                  <div className={`${experience.color} scale-75`}>
                     {experience.icon}
                   </div>
                 </motion.div>

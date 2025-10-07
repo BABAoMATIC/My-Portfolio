@@ -298,7 +298,7 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Last Updated:</span>
-                      <span className="font-semibold">Dec 2024</span>
+                      <span className="font-semibold">Aug 2025</span>
                     </div>
                   </div>
                 </div>
