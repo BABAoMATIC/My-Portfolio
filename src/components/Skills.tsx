@@ -173,14 +173,14 @@ const Skills: React.FC<AboutMeProps> = ({ isDarkMode }) => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
           {/* Profile Selection Panel */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="lg:col-span-1"
+            className="lg:col-span-1 w-full"
           >
             <div className={`p-4 sm:p-6 rounded-2xl ${
               isDarkMode ? 'glass-morphism-dark' : 'bg-white shadow-xl border border-gray-100'
@@ -259,7 +259,7 @@ const Skills: React.FC<AboutMeProps> = ({ isDarkMode }) => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="lg:col-span-2"
+            className="lg:col-span-2 w-full"
           >
             <div className={`p-4 sm:p-6 rounded-2xl ${
               isDarkMode ? 'glass-morphism-dark' : 'bg-white shadow-xl border border-gray-100'

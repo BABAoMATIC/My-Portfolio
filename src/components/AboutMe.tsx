@@ -99,10 +99,10 @@ const AboutMe: React.FC<AboutMeProps> = ({ isDarkMode }) => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center"
+          className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center w-full"
         >
           {/* Left Column - Bio */}
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -169,7 +169,7 @@ const AboutMe: React.FC<AboutMeProps> = ({ isDarkMode }) => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="space-y-6"
+            className="space-y-6 w-full"
           >
             {/* Top Row - Main Stats */}
             <div className="grid grid-cols-2 gap-4">

@@ -138,9 +138,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   };
 
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden">
       {/* Video Background with Smooth Transitions */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 w-full h-full">
         <AnimatePresence mode="wait">
           {!videoError ? (
             <motion.video
@@ -228,8 +228,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex items-center justify-center h-full">
-        <div className="text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 flex items-center justify-center h-full w-full">
+        <div className="text-center px-4 w-full max-w-4xl mx-auto">
           {/* Main Title */}
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
