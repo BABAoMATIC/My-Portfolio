@@ -32,13 +32,26 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
   }, []);
 
   const scrollToSection = (href: string) => {
+    console.log('Navigating to:', href);
+    
     if (href === '#home') {
       // Scroll to top of page for home button
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const element = document.querySelector(href);
+      const element = document.querySelector(href) as HTMLElement;
+      console.log('Found element:', element);
+      
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        // Add a small offset to account for fixed navigation
+        const navHeight = 64; // Approximate navigation height
+        const elementPosition = element.offsetTop - navHeight;
+        
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        });
+      } else {
+        console.error('Element not found for:', href);
       }
     }
     setIsMobileMenuOpen(false);
@@ -73,11 +86,16 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
             {navItems.map((item, index) => (
               <motion.button
                 key={item.name}
-                onClick={() => scrollToSection(item.href)}
-                className={`text-xs xl:text-sm font-medium transition-colors duration-300 hover:text-neon-purple ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  scrollToSection(item.href);
+                }}
+                className={`text-xs xl:text-sm font-medium transition-colors duration-300 hover:text-neon-purple px-2 py-1 rounded-md hover:bg-white/5 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}
-                whileHover={{ y: -2 }}
+                whileHover={{ y: -2, scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -143,13 +161,19 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
             {navItems.map((item, index) => (
               <motion.button
                 key={item.name}
-                onClick={() => scrollToSection(item.href)}
-                className={`block w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-medium transition-colors duration-300 hover:text-neon-purple ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  scrollToSection(item.href);
+                }}
+                className={`block w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-medium transition-colors duration-300 hover:text-neon-purple hover:bg-white/5 rounded-lg ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: isMobileMenuOpen ? 1 : 0, x: isMobileMenuOpen ? 0 : -20 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 {item.name}
               </motion.button>

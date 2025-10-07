@@ -65,17 +65,30 @@ function App() {
             <Navigation isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
             
             <main>
-              <HeroSection isDarkMode={isDarkMode} />
-              <AboutMe isDarkMode={isDarkMode} />
-              <Skills isDarkMode={isDarkMode} />
-              <Projects isDarkMode={isDarkMode} />
-              <Competitions isDarkMode={isDarkMode} />
-              <Experience isDarkMode={isDarkMode} />
-              <ResumeCertifications isDarkMode={isDarkMode} />
-              <Achievements isDarkMode={isDarkMode} />
-              <InteractiveQuiz isDarkMode={isDarkMode} />
-              <QRCodeGenerator isDarkMode={isDarkMode} />
-              <Contact isDarkMode={isDarkMode} />
+              <section id="home">
+                <HeroSection isDarkMode={isDarkMode} />
+              </section>
+              <section id="about">
+                <AboutMe isDarkMode={isDarkMode} />
+              </section>
+              <section id="skills">
+                <Skills isDarkMode={isDarkMode} />
+              </section>
+              <section id="projects">
+                <Projects isDarkMode={isDarkMode} />
+              </section>
+              <section id="competitions">
+                <Competitions isDarkMode={isDarkMode} />
+              </section>
+              <section id="experience">
+                <Experience isDarkMode={isDarkMode} />
+              </section>
+              <section id="achievements">
+                <Achievements isDarkMode={isDarkMode} />
+              </section>
+              <section id="contact">
+                <Contact isDarkMode={isDarkMode} />
+              </section>
             </main>
             
             <Chatbot isDarkMode={isDarkMode} />
