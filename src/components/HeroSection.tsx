@@ -78,7 +78,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
     const videoFiles = useMemo(() => [
-      '/videos/hero2.webm',  // hero2.webm - Start with this instead of lagging hero1
+      '/videos/hero2.webm',  // hero2.webm - Start with this
       '/videos/hero4.mp4',   // hero4.mp4
       '/videos/hero5.webm',  // hero5.webm
       '/videos/hero6.mp4',   // hero6.mp4
@@ -86,8 +86,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
       '/videos/hero8.webm',  // hero8.webm
       '/videos/hero9.webm',  // hero9.webm
       '/videos/hero10.webm', // hero10.webm
-      '/videos/hero11.webm', // hero11.webm
-      '/videos/hero1.mp4'    // hero1.mp4 - Move lagging video to last
+      '/videos/hero11.webm'   // hero11.webm - Removed problematic hero1.mp4
     ], []);
 
   useEffect(() => {

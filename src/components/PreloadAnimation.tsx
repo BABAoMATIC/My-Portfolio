@@ -14,7 +14,7 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
   useEffect(() => {
     // Video files to preload
     const videoFiles = [
-      '/videos/hero2.webm',  // Start with hero2 instead of lagging hero1
+      '/videos/hero2.webm',  // Start with hero2
       '/videos/hero4.mp4',
       '/videos/hero5.webm',
       '/videos/hero6.mp4',
@@ -22,8 +22,7 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
       '/videos/hero8.webm',
       '/videos/hero9.webm',
       '/videos/hero10.webm',
-      '/videos/hero11.webm',
-      '/videos/hero1.mp4'     // Move lagging hero1 to last
+      '/videos/hero11.webm'    // Removed problematic hero1.mp4
     ];
 
     // Aggressive video preloading optimized for Vercel deployment
