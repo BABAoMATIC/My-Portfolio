@@ -74,20 +74,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [videoError, setVideoError] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(false); // No initial loading state
+  const [retryCount, setRetryCount] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoFiles = useMemo(() => [
-    '/videos/hero1.mp4',   // 31718-388172974.mp4
-    '/videos/hero2.webm',  // 4K ANIME CLIPS FOR EDITS (DEMON SLAYER)
-    '/videos/hero3.webm', // 4K Beautiful Anime Scenery
-    '/videos/hero4.mp4', // Demon Slayer Tanjiro vs Rui 8K
-    '/videos/hero5.webm',  // Demon Slayer Explosion Scenes
-    '/videos/hero6.mp4',  // One Piece Luffy Clips
-    '/videos/hero7.webm',  // Saitama vs Genos 4K
-    '/videos/hero8.webm',  // Your Name 4K
-    '/videos/hero9.webm',  // Jujutsu Kaisen 4K
-    '/videos/hero10.webm', // Solo Leveling 4K
-    '/videos/hero11.webm'  // Tanjiro Kamado 4K
+    '/videos/hero1.mp4',   // hero1.mp4
+    '/videos/hero2.webm',  // hero2.webm
+    '/videos/hero3.webm',  // hero3.webm
+    '/videos/hero4.mp4',   // hero4.mp4
+    '/videos/hero5.webm',  // hero5.webm
+    '/videos/hero6.mp4',   // hero6.mp4
+    '/videos/hero7.webm',  // hero7.webm
+    '/videos/hero8.webm',  // hero8.webm
+    '/videos/hero9.webm',  // hero9.webm
+    '/videos/hero10.webm', // hero10.webm
+    '/videos/hero11.webm'  // hero11.webm
   ], []);
 
   useEffect(() => {
@@ -135,6 +136,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   useEffect(() => {
     setVideoError(false);
     setIsVideoLoading(false); // No loading state
+    setRetryCount(0); // Reset retry count for new video
   }, [currentVideoIndex]);
 
   // Enhanced preloading system optimized for Vercel deployment
@@ -294,12 +296,31 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               }}
               onError={(e) => {
                 console.error('Video loading error:', e);
+                console.log(`❌ Failed to load video ${currentVideoIndex + 1}: ${videoFiles[currentVideoIndex]}`);
+                console.log(`🔄 Retry count: ${retryCount}`);
+                
                 setVideoError(true);
                 setIsVideoLoading(false);
-                // Try to load the next video if current one fails
-                setTimeout(() => {
-                  setCurrentVideoIndex((prev) => (prev + 1) % videoFiles.length);
-                }, 1000);
+                
+                // Retry logic: try same video up to 2 times, then move to next
+                if (retryCount < 2) {
+                  setTimeout(() => {
+                    console.log(`🔄 Retrying video ${currentVideoIndex + 1} (attempt ${retryCount + 1})...`);
+                    setRetryCount(prev => prev + 1);
+                    setVideoError(false);
+                    // Force reload the video
+                    if (videoRef.current) {
+                      videoRef.current.load();
+                    }
+                  }, 3000);
+                } else {
+                  // After 2 retries, move to next video
+                  setTimeout(() => {
+                    console.log(`🔄 Moving to next video after ${retryCount} retries...`);
+                    setRetryCount(0);
+                    setCurrentVideoIndex((prev) => (prev + 1) % videoFiles.length);
+                  }, 2000);
+                }
               }}
               onLoadStart={() => {
                 // Start playing immediately when loading starts
@@ -331,6 +352,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               }}
             >
               <source src={videoFiles[currentVideoIndex]} type={videoFiles[currentVideoIndex].endsWith('.mp4') ? 'video/mp4' : 'video/webm'} />
+              {/* Fallback sources for better compatibility */}
+              {videoFiles[currentVideoIndex].endsWith('.mp4') && (
+                <source src={videoFiles[currentVideoIndex].replace('.mp4', '.webm')} type="video/webm" />
+              )}
+              {videoFiles[currentVideoIndex].endsWith('.webm') && (
+                <source src={videoFiles[currentVideoIndex].replace('.webm', '.mp4')} type="video/mp4" />
+              )}
             </motion.video>
           ) : (
             /* Fallback background when video fails to load */
