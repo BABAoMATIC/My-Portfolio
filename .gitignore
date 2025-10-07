@@ -76,7 +76,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public (commented out to allow video files)
 
 # Storybook build outputs
 .out
@@ -210,7 +210,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public (commented out to allow video files)
 
 # Storybook build outputs
 .out
