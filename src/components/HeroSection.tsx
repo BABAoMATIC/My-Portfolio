@@ -179,7 +179,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 willChange: 'transform, opacity' // Optimize for animations
               }}
             >
-              <source src={videoFiles[currentVideoIndex]} type="video/webm" />
+              <source src={videoFiles[currentVideoIndex]} type={videoFiles[currentVideoIndex].endsWith('.mp4') ? 'video/mp4' : 'video/webm'} />
             </motion.video>
           ) : (
             /* Fallback background when video fails to load */

@@ -36,7 +36,7 @@
     <meta name="msapplication-tap-highlight" content="no" />
     
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
     
@@ -65,6 +65,15 @@
           console.log('Prevented async response error:', event.reason);
         }
       });
+      
+      // Prevent Service Worker registration errors
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
     </script>
   </head>
   <body>
