@@ -77,19 +77,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const [retryCount, setRetryCount] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const videoFiles = useMemo(() => [
-    '/videos/hero1.mp4',   // hero1.mp4
-    '/videos/hero2.webm',  // hero2.webm
-    '/videos/hero3.webm',  // hero3.webm
-    '/videos/hero4.mp4',   // hero4.mp4
-    '/videos/hero5.webm',  // hero5.webm
-    '/videos/hero6.mp4',   // hero6.mp4
-    '/videos/hero7.webm',  // hero7.webm
-    '/videos/hero8.webm',  // hero8.webm
-    '/videos/hero9.webm',  // hero9.webm
-    '/videos/hero10.webm', // hero10.webm
-    '/videos/hero11.webm'  // hero11.webm
-  ], []);
+    const videoFiles = useMemo(() => [
+      '/videos/hero2.webm',  // hero2.webm - Start with this instead of lagging hero1
+      '/videos/hero4.mp4',   // hero4.mp4
+      '/videos/hero5.webm',  // hero5.webm
+      '/videos/hero6.mp4',   // hero6.mp4
+      '/videos/hero7.webm',  // hero7.webm
+      '/videos/hero8.webm',  // hero8.webm
+      '/videos/hero9.webm',  // hero9.webm
+      '/videos/hero10.webm', // hero10.webm
+      '/videos/hero11.webm', // hero11.webm
+      '/videos/hero1.mp4'    // hero1.mp4 - Move lagging video to last
+    ], []);
 
   useEffect(() => {
     // Immediate video preloading without delays
@@ -119,6 +118,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     // Start preloading immediately
     preloadVideosImmediately();
 
+    // Ensure video starts playing immediately when component mounts
+    const playVideoImmediately = () => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(console.log);
+      }
+    };
+    
+    // Try to play video immediately
+    playVideoImmediately();
+
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
         const nextIndex = (prev + 1) % videoFiles.length;
@@ -132,12 +141,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     return () => clearInterval(interval);
   }, [videoFiles]);
 
-  // Reset error state when video index changes
-  useEffect(() => {
-    setVideoError(false);
-    setIsVideoLoading(false); // No loading state
-    setRetryCount(0); // Reset retry count for new video
-  }, [currentVideoIndex]);
+    // Reset error state when video index changes
+    useEffect(() => {
+      setVideoError(false);
+      setIsVideoLoading(false); // No loading state
+      setRetryCount(0); // Reset retry count for new video
+      
+      // Try to play video immediately when index changes
+      if (videoRef.current) {
+        videoRef.current.play().catch(console.log);
+      }
+    }, [currentVideoIndex]);
 
   // Enhanced preloading system optimized for Vercel deployment
   useEffect(() => {
@@ -322,14 +336,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                   }, 2000);
                 }
               }}
-              onLoadStart={() => {
-                // Start playing immediately when loading starts
-                setIsVideoLoading(false);
-                console.log(`🔄 Starting to load video ${currentVideoIndex + 1}`);
-                if (videoRef.current) {
-                  videoRef.current.play().catch(console.log);
-                }
-              }}
+                onLoadStart={() => {
+                  // Start playing immediately when loading starts
+                  setIsVideoLoading(false);
+                  console.log(`🔄 Starting to load video ${currentVideoIndex + 1}`);
+                  if (videoRef.current) {
+                    videoRef.current.play().catch(console.log);
+                  }
+                }}
+                onLoadedMetadata={() => {
+                  // Video metadata loaded - start playing immediately
+                  if (videoRef.current) {
+                    videoRef.current.play().catch(console.log);
+                  }
+                }}
               onProgress={() => {
                 // Video is downloading/buffering
                 if (videoRef.current) {

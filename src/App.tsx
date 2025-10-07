@@ -27,10 +27,10 @@ function App() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setIsDarkMode(prefersDark);
     
-    // Show loading screen for 3 seconds while videos preload
+    // Show loading screen for 4.3 seconds while videos preload
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 4300);
 
     return () => clearTimeout(timer);
   }, []);
