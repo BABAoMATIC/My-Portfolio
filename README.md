@@ -31,7 +31,7 @@ Visit the live portfolio at: [Portfolio Website](http://localhost:3000)
 - **Interactive Cards**: Hover effects and flip animations
 
 ### 💻 Skills & Expertise
-- **Dynamic Profile Grid**: 6 skill profiles (Frontend, Backend, Data Science, Data Analyst, ML/AI, API Development)
+- **Dynamic Profile Grid**: 6 skill profiles (Frontend, Backend, Data Science, Data Analytics, ML/AI, API Development)
 - **Auto-Switching**: Profiles change every 10 seconds automatically
 - **Interactive Selection**: Manual profile switching with click
 - **Skill Progress Bars**: Animated progress indicators
@@ -221,8 +221,8 @@ portfolio-app/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/BABAoMATIC/nishit-portfolio-web.git
-   cd nishit-portfolio-web/portfolio-app
+   git clone https://github.com/BABAoMATIC/Portfolio.git
+   cd Portfolio
    ```
 
 2. **Install dependencies**
