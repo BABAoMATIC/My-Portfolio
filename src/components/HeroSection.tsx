@@ -77,17 +77,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoFiles = useMemo(() => [
-    '/videos/hero1.webm',
-    '/videos/hero2.webm',
-    '/videos/hero3.webm',
-    '/videos/hero4.webm',
-    '/videos/hero5.webm',
-    '/videos/hero6.webm',
-    '/videos/hero7.webm',
-    '/videos/hero8.webm',
-    '/videos/hero9.webm',
-    '/videos/hero10.webm',
-    '/videos/hero11.webm'
+    '/videos/hero1.mp4',   // 31718-388172974.mp4
+    '/videos/hero2.webm',  // 4K ANIME CLIPS FOR EDITS (DEMON SLAYER)
+    '/videos/hero3.webm', // 4K Beautiful Anime Scenery
+    '/videos/hero4.mp4', // Demon Slayer Tanjiro vs Rui 8K
+    '/videos/hero5.webm',  // Demon Slayer Explosion Scenes
+    '/videos/hero6.mp4',  // One Piece Luffy Clips
+    '/videos/hero7.webm',  // Saitama vs Genos 4K
+    '/videos/hero8.webm',  // Your Name 4K
+    '/videos/hero9.webm',  // Jujutsu Kaisen 4K
+    '/videos/hero10.webm', // Solo Leveling 4K
+    '/videos/hero11.webm'  // Tanjiro Kamado 4K
   ], []);
 
   useEffect(() => {
