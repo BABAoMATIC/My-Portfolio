@@ -41,6 +41,31 @@
     <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
     
     <title>Nishit Bhardwaj - Full Stack Developer & Data Analyst</title>
+    
+    <!-- Prevent extension conflicts -->
+    <script>
+      // Handle extension message conflicts
+      window.addEventListener('message', function(event) {
+        if (event.source !== window) {
+          // Handle extension messages
+          if (event.data && event.data.source === 'extension') {
+            event.source.postMessage({ 
+              success: true, 
+              message: 'Message received' 
+            });
+          }
+        }
+      });
+      
+      // Prevent async response errors
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.message && 
+            event.reason.message.includes('message channel closed')) {
+          event.preventDefault();
+          console.log('Prevented async response error:', event.reason);
+        }
+      });
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

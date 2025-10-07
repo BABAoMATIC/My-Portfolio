@@ -8,6 +8,17 @@ const urlsToCache = [
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Urbanist:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap'
 ];
 
+// Global error handler to prevent async response errors
+self.addEventListener('error', (event) => {
+  console.log('Service Worker Error:', event.error);
+  event.preventDefault();
+});
+
+self.addEventListener('unhandledrejection', (event) => {
+  console.log('Service Worker Unhandled Rejection:', event.reason);
+  event.preventDefault();
+});
+
 // Install event
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -24,11 +35,19 @@ self.addEventListener('install', (event) => {
 
 // Fetch event with improved error handling
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests and chrome-extension requests
+  // Skip non-GET requests and extension requests
   if (event.request.method !== 'GET' || 
       event.request.url.startsWith('chrome-extension://') ||
       event.request.url.startsWith('moz-extension://') ||
-      event.request.url.startsWith('safari-extension://')) {
+      event.request.url.startsWith('safari-extension://') ||
+      event.request.url.startsWith('edge-extension://')) {
+    return;
+  }
+  
+  // Skip requests that might cause async response issues
+  if (event.request.url.includes('chrome-extension') ||
+      event.request.url.includes('moz-extension') ||
+      event.request.url.includes('safari-extension')) {
     return;
   }
 
@@ -91,12 +110,30 @@ self.addEventListener('activate', (event) => {
 
 // Message event handler to prevent async response errors
 self.addEventListener('message', (event) => {
+  // Handle different message types
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
   
-  // Always respond to prevent async response errors
+  // Always respond immediately to prevent async response errors
   if (event.ports && event.ports[0]) {
-    event.ports[0].postMessage({ success: true });
+    try {
+      event.ports[0].postMessage({ 
+        success: true, 
+        type: 'response',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.log('Error posting message:', error);
+    }
+  }
+  
+  // Handle extension messages
+  if (event.data && event.data.source === 'extension') {
+    // Respond to extension messages immediately
+    event.source.postMessage({ 
+      success: true, 
+      message: 'Service worker received message' 
+    });
   }
 });
