@@ -75,17 +75,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoFiles = useMemo(() => [
-    '31718-388172974.mp4',
-    '4K ANIME CLIPS FOR EDITS (DEMON SLAYER)(4K_HD).webm',
-    '4K Beautiful Anime Scenery(4K_60FPS).webm',
-    'Demon Slayer _ Tanjiro vs Rui「4320p」8K(8K_HD).mp4',
-    'Demon Slayer - Explosion Scenes [4K BD](4K_60FPS).webm',
-    'One Piece - Luffy Clips For Edits (4k)(1080P_60FPS).mp4',
-    'Saitama vs Genos 4K - One Punch Man S1 EP5(4K_HD).webm',
-    'THIS IS 4K ANIME _ YOUR NAME 2160P 60FPS(4K_60FPS).webm',
-    'THIS IS 4K ANIME (Jujutsu Kaisen)(4K_60FPS).webm',
-    'THIS IS 4K ANIME (Solo Leveling)(4K_60FPS).webm',
-    'This is 8K HDR Anime _ Tengen vs Gyutaro Fight Scene【8K HDR】(8K_HD).mp4'
+    'video_01.mp4',
+    'demon_slayer_clip_01.webm',
+    'anime_scenery_01.webm',
+    'tanjiro_vs_rui_8k.mp4',
+    'explosion_scenes_4k.webm',
+    'luffy_clips_4k.mp4',
+    'saitama_vs_genos_4k.webm',
+    'your_name_4k.webm',
+    'jujutsu_kaisen_4k.webm',
+    'solo_leveling_4k.webm',
+    'tanjiro_kamado_4k.webm'
   ], []);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   useEffect(() => {
     const nextIndex = (currentVideoIndex + 1) % videoFiles.length;
     const nextVideo = document.createElement('video');
-    nextVideo.src = `./assets/videos/${videoFiles[nextIndex]}`;
+    nextVideo.src = `/videos/${videoFiles[nextIndex]}`;
     nextVideo.preload = 'metadata'; // Only preload metadata for better performance
     nextVideo.muted = true;
     nextVideo.playsInline = true;
@@ -120,7 +120,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
 
   const handleDownloadResume = () => {
     const link = document.createElement('a');
-    link.href = './assets/Nishit bhardwaj resume.pdf';
+    link.href = '/resume.pdf';
     link.download = 'Nishit_Bhardwaj_Resume.pdf';
     link.click();
   };
@@ -168,8 +168,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               willChange: 'transform, opacity' // Optimize for animations
             }}
           >
-            <source src={`./assets/videos/${videoFiles[currentVideoIndex]}`} type="video/mp4" />
-            <source src={`./assets/videos/${videoFiles[currentVideoIndex]}`} type="video/webm" />
+            <source src={`/videos/${videoFiles[currentVideoIndex]}`} type="video/mp4" />
+            <source src={`/videos/${videoFiles[currentVideoIndex]}`} type="video/webm" />
           </motion.video>
         </AnimatePresence>
         
