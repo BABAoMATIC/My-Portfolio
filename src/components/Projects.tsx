@@ -219,7 +219,7 @@ This work demonstrates proficiency in full-stack development, data processing, a
         </motion.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
           {filteredProjects.map((project, index) => (
             <motion.div
               key={project.id}
@@ -235,7 +235,7 @@ This work demonstrates proficiency in full-stack development, data processing, a
               }`}
             >
               {/* Project Image */}
-              <div className="relative h-40 sm:h-48 overflow-hidden">
+              <div className="relative h-36 sm:h-40 lg:h-48 overflow-hidden">
                 <div className="w-full h-full bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20 flex items-center justify-center">
                   <div className="text-4xl sm:text-6xl opacity-50">
                     {getCategoryIcon(project.category)}
@@ -254,7 +254,7 @@ This work demonstrates proficiency in full-stack development, data processing, a
               </div>
 
               {/* Project Content */}
-              <div className="p-4 sm:p-6">
+              <div className="p-3 sm:p-4 lg:p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
                     isDarkMode ? 'bg-neon-purple/20 text-neon-purple' : 'bg-neon-purple/10 text-neon-purple'
@@ -271,8 +271,8 @@ This work demonstrates proficiency in full-stack development, data processing, a
                 </p>
 
                 {/* Tech Stack */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.techStack.slice(0, 4).map((tech) => (
+                <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
+                  {project.techStack.slice(0, 3).map((tech) => (
                     <span
                       key={tech}
                       className={`px-2 py-1 rounded text-xs ${
@@ -282,61 +282,68 @@ This work demonstrates proficiency in full-stack development, data processing, a
                       {tech}
                     </span>
                   ))}
-                  {project.techStack.length > 4 && (
+                  {project.techStack.length > 3 && (
                     <span className={`px-2 py-1 rounded text-xs ${
                       isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
                     }`}>
-                      +{project.techStack.length - 4}
+                      +{project.techStack.length - 3}
                     </span>
                   )}
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2">
-                  <motion.button
-                    onClick={() => handlePreviewProject(project)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm font-medium"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Preview
-                  </motion.button>
+                <div className="space-y-2">
+                  {/* First row - Preview and AI buttons */}
+                  <div className="flex gap-2">
+                    <motion.button
+                      onClick={() => handlePreviewProject(project)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      <Eye className="w-4 h-4" />
+                      Preview
+                    </motion.button>
+                    
+                    <motion.button
+                      onClick={() => generateAIExplanation(project)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      disabled={isGeneratingAI}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-colors disabled:opacity-50 text-sm font-medium"
+                      title="AI Explanation"
+                    >
+                      <Lightbulb className="w-4 h-4" />
+                      AI
+                    </motion.button>
+                  </div>
                   
-                  <motion.a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors text-sm font-medium"
-                  >
-                    <Github className="w-4 h-4" />
-                    Code
-                  </motion.a>
-                  
-                  <motion.a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-gradient-to-r from-neon-purple to-neon-cyan text-white hover:shadow-lg transition-all text-sm font-medium"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Live
-                  </motion.a>
-                  
-                  <motion.button
-                    onClick={() => generateAIExplanation(project)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    disabled={isGeneratingAI}
-                    className="p-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-colors disabled:opacity-50"
-                    title="AI Explanation"
-                  >
-                    <Lightbulb className="w-4 h-4" />
-                  </motion.button>
+                  {/* Second row - Code and Live buttons */}
+                  <div className="flex gap-2">
+                    <motion.a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors text-sm font-medium"
+                    >
+                      <Github className="w-4 h-4" />
+                      Code
+                    </motion.a>
+                    
+                    <motion.a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-gradient-to-r from-neon-purple to-neon-cyan text-white hover:shadow-lg transition-all text-sm font-medium"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Live
+                    </motion.a>
+                  </div>
                 </div>
               </div>
             </motion.div>
