@@ -72,27 +72,31 @@ const TypingAnimation: React.FC<{ text: string; speed?: number; eraseSpeed?: num
 
 const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [videoError, setVideoError] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const videoFiles = useMemo(() => [
-    'video_01.mp4',
-    'demon_slayer_clip_01.webm',
-    'anime_scenery_01.webm',
-    'tanjiro_vs_rui_8k.mp4',
-    'explosion_scenes_4k.webm',
-    'luffy_clips_4k.mp4',
-    'saitama_vs_genos_4k.webm',
-    'your_name_4k.webm',
-    'jujutsu_kaisen_4k.webm',
-    'solo_leveling_4k.webm',
-    'tanjiro_kamado_4k.webm'
+    'https://drive.google.com/uc?export=download&id=158NG65OktF6lFOyen2bk6QrQEmr9RpkK',
+    'https://drive.google.com/uc?export=download&id=1gKdb6wOLAjnH1X3ReOsNDR-Cuqo5Y5Rb',
+    'https://drive.google.com/uc?export=download&id=15iylB72VB0KSDmBhaQpMyrTD8gcqsGwI',
+    'https://drive.google.com/uc?export=download&id=1MF1y61VWKE1G8fMCAd6V4aTWMIVFaTjd',
+    'https://drive.google.com/uc?export=download&id=1uZFRH8MligbzGvgMIuKnrLTS79_CiUxm',
+    'https://drive.google.com/uc?export=download&id=1qXv2MnNGRsMRtlqYH0TjGQ_BBkorUkb6',
+    'https://drive.google.com/uc?export=download&id=1EqJgw6ZS2VG65MlRlCZiW9zvLKGXHTYX',
+    'https://drive.google.com/uc?export=download&id=1YxiyFfgaqdojxr9uSkOH5QEZ10gHO8M-',
+    'https://drive.google.com/uc?export=download&id=1m6PnspO7ZSkeS77fqhjp52AyUDm75_fV',
+    'https://drive.google.com/uc?export=download&id=1hqTP-IQjXc_T7Z89zrGN8diP9tdod4pV',
+    'https://drive.google.com/uc?export=download&id=1pmLzFnGqS5oQvHZk55RS3nOvXVd_ag1z'
   ], []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
         const nextIndex = (prev + 1) % videoFiles.length;
-        console.log(`🎬 Switching to video ${nextIndex + 1}/${videoFiles.length}: ${videoFiles[nextIndex]}`);
+        console.log(`🎬 Switching to video ${nextIndex + 1}/${videoFiles.length}`);
+        setVideoError(false); // Reset error state when switching videos
+        setIsVideoLoading(true); // Set loading state
         return nextIndex;
       });
     }, 40000); // Change video every 40 seconds
@@ -104,10 +108,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   useEffect(() => {
     const nextIndex = (currentVideoIndex + 1) % videoFiles.length;
     const nextVideo = document.createElement('video');
-    nextVideo.src = `/videos/${videoFiles[nextIndex]}`;
+    nextVideo.src = videoFiles[nextIndex];
     nextVideo.preload = 'metadata'; // Only preload metadata for better performance
     nextVideo.muted = true;
     nextVideo.playsInline = true;
+    nextVideo.crossOrigin = 'anonymous'; // Handle CORS for Google Drive videos
     
     // Clean up previous preloaded videos to save memory
     return () => {
@@ -137,44 +142,74 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
       {/* Video Background with Smooth Transitions */}
       <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">
-          <motion.video
-            key={currentVideoIndex}
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="" // No poster to reduce initial load
-            initial={{ opacity: 1, scale: 1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1 }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
-            onLoadedData={() => {
-              if (videoRef.current) {
-                videoRef.current.play().catch(console.log);
-              }
-            }}
-            onError={(e) => {
-              console.error('Video loading error:', e);
-            }}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              filter: 'brightness(0.8) contrast(1.1)', // Enhanced visual quality
-              transform: 'scale(1.02)', // Slight zoom to prevent black borders
-              willChange: 'transform, opacity' // Optimize for animations
-            }}
-          >
-            <source src={`/videos/${videoFiles[currentVideoIndex]}`} type="video/mp4" />
-            <source src={`/videos/${videoFiles[currentVideoIndex]}`} type="video/webm" />
-          </motion.video>
+          {!videoError ? (
+            <motion.video
+              key={currentVideoIndex}
+              ref={videoRef}
+              className="w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              crossOrigin="anonymous"
+              poster="" // No poster to reduce initial load
+              initial={{ opacity: 1, scale: 1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1 }}
+              transition={{ duration: 0.1, ease: "easeInOut" }}
+              onLoadedData={() => {
+                setIsVideoLoading(false);
+                if (videoRef.current) {
+                  videoRef.current.play().catch(console.log);
+                }
+              }}
+              onError={(e) => {
+                console.error('Video loading error:', e);
+                setVideoError(true);
+                setIsVideoLoading(false);
+              }}
+              onLoadStart={() => {
+                setIsVideoLoading(true);
+              }}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'brightness(0.8) contrast(1.1)', // Enhanced visual quality
+                transform: 'scale(1.02)', // Slight zoom to prevent black borders
+                willChange: 'transform, opacity' // Optimize for animations
+              }}
+            >
+              <source src={videoFiles[currentVideoIndex]} type="video/mp4" />
+              <source src={videoFiles[currentVideoIndex]} type="video/webm" />
+            </motion.video>
+          ) : (
+            /* Fallback background when video fails to load */
+            <motion.div
+              key={`fallback-${currentVideoIndex}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                filter: 'brightness(0.8) contrast(1.1)'
+              }}
+            />
+          )}
         </AnimatePresence>
         
         {/* Enhanced Dark Overlay with Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
+        
+        {/* Loading Indicator */}
+        {isVideoLoading && !videoError && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+          </div>
+        )}
         
         {/* Subtle Animated Overlay */}
         <motion.div
