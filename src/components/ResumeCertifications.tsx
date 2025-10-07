@@ -188,13 +188,13 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-6 font-urbanist">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text mb-4 sm:mb-6 font-urbanist">
             Resume & Certifications
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-neon-purple to-neon-cyan rounded-full mx-auto mb-8" />
-          <p className="text-lg max-w-2xl mx-auto">
+          <div className="w-16 sm:w-20 h-1 bg-gradient-to-r from-neon-purple to-neon-cyan rounded-full mx-auto mb-6 sm:mb-8" />
+          <p className="text-base sm:text-lg max-w-2xl mx-auto px-4 leading-relaxed">
             Download my resume and explore my professional certifications and qualifications
           </p>
         </motion.div>
@@ -205,23 +205,23 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className={`p-8 rounded-2xl mb-16 ${
+          className={`p-4 sm:p-6 lg:p-8 rounded-2xl mb-12 sm:mb-16 ${
             isDarkMode ? 'glass-morphism-dark' : 'bg-white shadow-xl border border-gray-100'
           }`}
         >
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
             <div>
-              <h3 className="text-3xl font-bold mb-4 gradient-text font-urbanist">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 gradient-text font-urbanist">
                 Professional Resume
               </h3>
-              <p className={`text-lg leading-relaxed mb-6 ${
+              <p className={`text-base sm:text-lg leading-relaxed mb-4 sm:mb-6 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 Download my comprehensive resume featuring my technical expertise, professional experience, 
                 project portfolio, and achievements. Updated regularly with the latest accomplishments.
               </p>
               
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {resumeHighlights.map((highlight, index) => (
                   <motion.div
                     key={index}
@@ -229,14 +229,14 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-center space-x-3"
+                    className="flex items-start space-x-3"
                   >
-                    <div className={`${highlight.color} p-2 rounded-lg bg-white/10`}>
+                    <div className={`${highlight.color} p-2 rounded-lg bg-white/10 flex-shrink-0`}>
                       {highlight.icon}
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-sm">{highlight.title}</h4>
-                      <p className={`text-xs ${
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-sm sm:text-base mb-1">{highlight.title}</h4>
+                      <p className={`text-xs sm:text-sm leading-relaxed ${
                         isDarkMode ? 'text-gray-400' : 'text-gray-600'
                       }`}>
                         {highlight.description}
@@ -246,14 +246,14 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <motion.button
                   onClick={() => setIsPreviewOpen(true)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn-secondary text-lg px-8 py-4 flex items-center gap-3"
+                  className="btn-secondary text-sm sm:text-base px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-center gap-2 sm:gap-3"
                 >
-                  <Eye className="w-6 h-6" />
+                  <Eye className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
                   <span>Preview Resume</span>
                 </motion.button>
                 
@@ -261,29 +261,29 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
                   onClick={handleDownloadResume}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn-primary text-lg px-8 py-4 flex items-center gap-3"
+                  className="btn-primary text-sm sm:text-base px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-center gap-2 sm:gap-3"
                 >
-                  <Download className="w-6 h-6" />
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
                   <span>Download Resume (PDF)</span>
                 </motion.button>
               </div>
             </div>
 
             <div className="relative">
-              <div className={`p-8 rounded-xl ${
+              <div className={`p-4 sm:p-6 lg:p-8 rounded-xl ${
                 isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'
               }`}>
-                <div className="flex items-center justify-center mb-6">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan flex items-center justify-center">
-                    <FileText className="w-10 h-10 text-white" />
+                <div className="flex items-center justify-center mb-4 sm:mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan flex items-center justify-center">
+                    <FileText className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                   </div>
                 </div>
                 
                 <div className="text-center">
-                  <h4 className="text-xl font-bold mb-2">Nishit Bhardwaj</h4>
-                  <p className="text-gray-500 mb-4">Full Stack Developer | Data Scientist</p>
+                  <h4 className="text-lg sm:text-xl font-bold mb-2">Nishit Bhardwaj</h4>
+                  <p className="text-sm sm:text-base text-gray-500 mb-3 sm:mb-4">Full Stack Developer | Data Scientist</p>
                   
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2 text-xs sm:text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-500">Experience:</span>
                       <span className="font-semibold">1+ Year</span>
@@ -308,7 +308,7 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
         </motion.div>
 
         {/* Certifications Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {certifications.map((cert, index) => (
             <motion.div
               key={cert.id}
@@ -317,7 +317,7 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className={`p-6 rounded-xl card-hover ${cert.bgColor} ${
+              className={`p-4 sm:p-6 rounded-xl card-hover ${cert.bgColor} ${
                 isDarkMode ? 'glass-morphism-dark' : 'bg-white shadow-lg border border-gray-100'
               }`}
             >
@@ -351,19 +351,19 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-2 font-urbanist">{cert.title}</h3>
-              <div className="flex items-center gap-2 mb-3">
+              <h3 className="text-lg sm:text-xl font-bold mb-2 font-urbanist leading-tight">{cert.title}</h3>
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
                 <Award className="w-4 h-4 text-neon-purple" />
-                <span className="font-semibold text-neon-purple">{cert.issuer}</span>
+                <span className="font-semibold text-neon-purple text-sm sm:text-base">{cert.issuer}</span>
               </div>
               
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
                 <Calendar className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-500">{cert.date}</span>
+                <span className="text-xs sm:text-sm text-gray-500">{cert.date}</span>
               </div>
 
               {cert.credentialId && (
-                <div className="mb-3">
+                <div className="mb-2 sm:mb-3">
                   <span className="text-xs text-gray-500">Credential ID: </span>
                   <span className="text-xs font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                     {cert.credentialId}
@@ -371,15 +371,15 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
                 </div>
               )}
 
-              <p className={`text-sm leading-relaxed mb-4 ${
+              <p className={`text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 {cert.description}
               </p>
 
               <div>
-                <h4 className="text-sm font-semibold mb-2 text-neon-cyan">Skills Covered:</h4>
-                <div className="flex flex-wrap gap-2">
+                <h4 className="text-xs sm:text-sm font-semibold mb-2 text-neon-cyan">Skills Covered:</h4>
+                <div className="flex flex-wrap gap-1 sm:gap-2">
                   {cert.skills.map((skill) => (
                     <span
                       key={skill}
@@ -416,37 +416,37 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
-          className="mt-16 text-center"
+          className="mt-12 sm:mt-16 text-center"
         >
-          <div className={`p-8 rounded-2xl ${
+          <div className={`p-4 sm:p-6 lg:p-8 rounded-2xl ${
             isDarkMode 
               ? 'glass-morphism-dark' 
               : 'bg-white shadow-xl border border-gray-100'
           }`}>
-            <h3 className="text-2xl font-bold mb-4 gradient-text font-urbanist">
+            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 gradient-text font-urbanist">
               Continuous Learning Journey
             </h3>
-            <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-6">
+            <p className="text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto mb-4 sm:mb-6 px-4">
               These certifications represent my commitment to staying current with the latest technologies 
               and best practices in software development, data analysis, and cloud computing. Each certification 
               has been earned through rigorous study and practical application.
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-neon-purple mb-2">6+</div>
-                <div className="text-sm text-gray-500">Certifications</div>
+                <div className="text-2xl sm:text-3xl font-bold text-neon-purple mb-1 sm:mb-2">6+</div>
+                <div className="text-xs sm:text-sm text-gray-500">Certifications</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-neon-cyan mb-2">100%</div>
-                <div className="text-sm text-gray-500">Pass Rate</div>
+                <div className="text-2xl sm:text-3xl font-bold text-neon-cyan mb-1 sm:mb-2">100%</div>
+                <div className="text-xs sm:text-sm text-gray-500">Pass Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400 mb-2">2020 - Still Going</div>
-                <div className="text-sm text-gray-500">Active Period</div>
+                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-400 mb-1 sm:mb-2">2020 - Still Going</div>
+                <div className="text-xs sm:text-sm text-gray-500">Active Period</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">4.7★</div>
-                <div className="text-sm text-gray-500">Average Rating</div>
+                <div className="text-2xl sm:text-3xl font-bold text-green-400 mb-1 sm:mb-2">4.7★</div>
+                <div className="text-xs sm:text-sm text-gray-500">Average Rating</div>
               </div>
             </div>
           </div>
