@@ -37,23 +37,46 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
     if (href === '#home') {
       // Scroll to top of page for home button
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
+      setIsMobileMenuOpen(false);
+      return;
+    }
+    
+    // Function to attempt scrolling
+    const attemptScroll = (attempt = 1) => {
       const element = document.querySelector(href) as HTMLElement;
-      console.log('Found element:', element);
+      console.log(`Attempt ${attempt}: Found element:`, element);
       
       if (element) {
-        // Add a small offset to account for fixed navigation
-        const navHeight = 64; // Approximate navigation height
-        const elementPosition = element.offsetTop - navHeight;
+        // Get the actual navigation height dynamically
+        const nav = document.querySelector('nav');
+        const navHeight = nav ? nav.offsetHeight : 80;
+        
+        // Calculate the position with proper offset
+        const elementPosition = element.offsetTop - navHeight - 20; // Extra 20px padding
+        
+        console.log(`Scrolling to position: ${elementPosition} (element at ${element.offsetTop}, nav height: ${navHeight})`);
         
         window.scrollTo({
-          top: elementPosition,
+          top: Math.max(0, elementPosition), // Ensure we don't scroll to negative position
           behavior: 'smooth'
         });
+        return true;
+      } else if (attempt < 3) {
+        // Retry after a short delay
+        console.log(`Element not found, retrying in 200ms... (attempt ${attempt})`);
+        setTimeout(() => attemptScroll(attempt + 1), 200);
+        return false;
       } else {
-        console.error('Element not found for:', href);
+        console.error('Element not found after 3 attempts for:', href);
+        return false;
       }
-    }
+    };
+    
+    // Wait a bit for any animations to complete, then attempt scroll
+    setTimeout(() => {
+      attemptScroll();
+    }, 100);
+    
     setIsMobileMenuOpen(false);
   };
 
@@ -76,7 +99,12 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="text-xl sm:text-2xl font-bold gradient-text font-urbanist cursor-pointer"
-            onClick={() => scrollToSection('#home')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Logo clicked - scrolling to home');
+              scrollToSection('#home');
+            }}
           >
             NB
           </motion.div>
@@ -89,6 +117,7 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  console.log(`Desktop nav clicked: ${item.name} -> ${item.href}`);
                   scrollToSection(item.href);
                 }}
                 className={`text-xs xl:text-sm font-medium transition-colors duration-300 hover:text-neon-purple px-2 py-1 rounded-md hover:bg-white/5 ${
@@ -164,6 +193,7 @@ const Navigation: React.FC<NavigationProps> = ({ isDarkMode, toggleTheme }) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  console.log(`Mobile nav clicked: ${item.name} -> ${item.href}`);
                   scrollToSection(item.href);
                 }}
                 className={`block w-full text-left px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-medium transition-colors duration-300 hover:text-neon-purple hover:bg-white/5 rounded-lg ${
