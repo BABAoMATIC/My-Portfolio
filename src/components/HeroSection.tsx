@@ -94,7 +94,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
         const nextIndex = (prev + 1) % videoFiles.length;
-        console.log(`🎬 Switching to video ${nextIndex + 1}/${videoFiles.length}`);
+        console.log(`🎬 Switching to video ${nextIndex + 1}/${videoFiles.length}: ${videoFiles[nextIndex]}`);
         setVideoError(false); // Reset error state when switching videos
         setIsVideoLoading(true); // Set loading state
         return nextIndex;
@@ -103,6 +103,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
 
     return () => clearInterval(interval);
   }, [videoFiles]);
+
+  // Reset error state when video index changes
+  useEffect(() => {
+    setVideoError(false);
+    setIsVideoLoading(true);
+  }, [currentVideoIndex]);
 
   // Optimized preloading for better performance
   useEffect(() => {
@@ -166,6 +172,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 console.error('Video loading error:', e);
                 setVideoError(true);
                 setIsVideoLoading(false);
+                // Try to load the next video if current one fails
+                setTimeout(() => {
+                  setCurrentVideoIndex((prev) => (prev + 1) % videoFiles.length);
+                }, 1000);
               }}
               onLoadStart={() => {
                 setIsVideoLoading(true);
@@ -189,8 +199,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 w-full h-full bg-black"
-            />
+              className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
+            >
+              {/* Animated background pattern */}
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 animate-pulse" />
+                <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-full blur-3xl animate-bounce" />
+                <div className="absolute bottom-1/4 right-1/4 w-1/3 h-1/3 bg-gradient-to-r from-pink-500/10 to-cyan-500/10 rounded-full blur-2xl animate-pulse" />
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
         

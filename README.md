@@ -4,7 +4,7 @@ A modern, responsive portfolio website showcasing my skills as a Full Stack Deve
 
 ## 🚀 Live Demo
 
-Visit the live portfolio at: [Portfolio Website](http://localhost:3000)
+Visit the live portfolio at: [[Portfolio Website](https://nishitbhardwaj.netlify.app/))
 
 ## 📋 Table of Contents
 
