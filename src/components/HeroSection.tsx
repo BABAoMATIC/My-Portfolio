@@ -73,185 +73,212 @@ const TypingAnimation: React.FC<{ text: string; speed?: number; eraseSpeed?: num
 const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [videoError, setVideoError] = useState(false);
-  const [isVideoLoading, setIsVideoLoading] = useState(false); // No initial loading state
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [failedVideos, setFailedVideos] = useState<Set<number>>(new Set()); // Track failed videos
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false); // Track if video is playing
   const videoRef = useRef<HTMLVideoElement>(null);
+  const preloadVideosRef = useRef<HTMLVideoElement[]>([]); // Track preloaded videos
 
     const videoFiles = useMemo(() => [
-      '/videos/hero2.webm',  // hero2.webm - Start with this
-      '/videos/hero4.mp4',   // hero4.mp4
-      '/videos/hero5.webm',  // hero5.webm
-      '/videos/hero6.mp4',   // hero6.mp4
-      '/videos/hero7.webm',  // hero7.webm
-      '/videos/hero8.webm',  // hero8.webm
-      '/videos/hero9.webm',  // hero9.webm
-      '/videos/hero10.webm', // hero10.webm
+      '/videos/hero2.webm',   // hero2.webm - Start with this
+      '/videos/hero4.webm',   // hero4.webm - Use webm version instead of mp4
+      '/videos/hero5.webm',   // hero5.webm
+      '/videos/hero6.webm',   // hero6.webm - Use webm version instead of mp4
+      '/videos/hero7.webm',   // hero7.webm
+      '/videos/hero8.webm',   // hero8.webm
+      '/videos/hero9.webm',   // hero9.webm
+      '/videos/hero10.webm',  // hero10.webm
       '/videos/hero11.webm'   // hero11.webm - Removed problematic hero1.mp4
     ], []);
 
+  // Function to get next available video (skipping failed ones)
+  const getNextAvailableVideo = (currentIndex: number): number => {
+    let nextIndex = (currentIndex + 1) % videoFiles.length;
+    let attempts = 0;
+    
+    // Keep trying until we find a working video or tried all videos
+    while (failedVideos.has(nextIndex) && attempts < videoFiles.length) {
+      nextIndex = (nextIndex + 1) % videoFiles.length;
+      attempts++;
+    }
+    
+    // If all videos failed, reset failed videos and start fresh
+    if (attempts >= videoFiles.length) {
+      console.log('🔄 All videos failed, resetting failed videos list');
+      setFailedVideos(new Set());
+      nextIndex = (currentIndex + 1) % videoFiles.length;
+    }
+    
+    return nextIndex;
+  };
+
+  // Function to handle video errors and switch to next video
+  const handleVideoError = (videoIndex: number, error: any) => {
+    console.error(`❌ Video ${videoIndex + 1} failed: ${videoFiles[videoIndex]}`, error);
+    
+    // Mark video as failed
+    setFailedVideos(prev => {
+      const newSet = new Set(prev);
+      newSet.add(videoIndex);
+      return newSet;
+    });
+    
+    // Stop current video if it's the failed one
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    
+    // Switch to next available video immediately
+    const nextIndex = getNextAvailableVideo(videoIndex);
+    console.log(`🔄 Switching to next available video: ${nextIndex + 1}`);
+    
+    setTimeout(() => {
+      setCurrentVideoIndex(nextIndex);
+      setVideoError(false);
+      setRetryCount(0);
+      setIsVideoLoading(false);
+    }, 500); // Small delay to ensure clean transition
+  };
+
   useEffect(() => {
-    // Immediate video preloading without delays
-    const preloadVideosImmediately = () => {
-      console.log('🚀 Starting immediate video preloading...');
+    // Smart preloading with comprehensive error handling
+    const smartPreloadVideos = () => {
+      console.log('🚀 Starting smart video preloading with error handling...');
       
-      // Preload first few videos immediately
-      for (let i = 0; i < Math.min(3, videoFiles.length); i++) {
+      // Clear previous preloaded videos
+      preloadVideosRef.current.forEach(video => {
+        if (video.parentNode) {
+          video.parentNode.removeChild(video);
+        }
+      });
+      preloadVideosRef.current = [];
+      
+      // Preload all videos in background with smart strategy
+      videoFiles.forEach((videoSrc, index) => {
+        // Skip if video is already marked as failed
+        if (failedVideos.has(index)) {
+          console.log(`⏭️ Skipping failed video ${index + 1}: ${videoSrc}`);
+          return;
+        }
+        
         const video = document.createElement('video');
-        video.src = videoFiles[i];
+        video.src = videoSrc;
         video.preload = 'auto';
         video.muted = true;
         video.playsInline = true;
         video.crossOrigin = 'anonymous';
-        video.load();
+        video.style.display = 'none';
+        video.volume = 0;
+        
+        // Store reference for cleanup
+        preloadVideosRef.current.push(video);
+        
+        // Add to DOM to trigger preloading
+        document.body.appendChild(video);
         
         video.addEventListener('canplaythrough', () => {
-          console.log(`✅ Video ${i + 1} ready: ${videoFiles[i]}`);
+          console.log(`✅ Video ${index + 1} preloaded successfully: ${videoSrc}`);
         });
         
         video.addEventListener('error', (e) => {
-          console.warn(`⚠️ Video ${i + 1} failed: ${videoFiles[i]}`, e);
+          console.warn(`⚠️ Video ${index + 1} preload failed: ${videoSrc}`, e);
+          // Mark as failed
+          setFailedVideos(prev => {
+            const newSet = new Set(prev);
+            newSet.add(index);
+            return newSet;
+          });
+          // Remove from DOM
+          if (video.parentNode) {
+            video.parentNode.removeChild(video);
+          }
+          // Remove from refs
+          preloadVideosRef.current = preloadVideosRef.current.filter(v => v !== video);
         });
         
-        video.addEventListener('abort', () => {
-          console.log(`⏹️ Video ${i + 1} aborted: ${videoFiles[i]}`);
-        });
-      }
+        video.load();
+      });
     };
 
-    // Start preloading immediately
-    preloadVideosImmediately();
+    // Start smart preloading
+    smartPreloadVideos();
 
-    // Ensure video starts playing immediately when component mounts
-    const playVideoImmediately = () => {
-      if (videoRef.current) {
-        videoRef.current.play().catch(console.log);
-      }
+    // Cleanup function
+    return () => {
+      preloadVideosRef.current.forEach(video => {
+        if (video.parentNode) {
+          video.parentNode.removeChild(video);
+        }
+      });
+      preloadVideosRef.current = [];
     };
-    
-    // Try to play video immediately
-    playVideoImmediately();
+  }, [videoFiles, failedVideos]);
 
+  // Video switching interval with error handling
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prev) => {
-        const nextIndex = (prev + 1) % videoFiles.length;
+        const nextIndex = getNextAvailableVideo(prev);
         console.log(`🎬 Switching to video ${nextIndex + 1}/${videoFiles.length}: ${videoFiles[nextIndex]}`);
-        setVideoError(false); // Reset error state when switching videos
-        setIsVideoLoading(true); // Set loading state
+        setVideoError(false);
+        setIsVideoLoading(false);
+        setRetryCount(0);
         return nextIndex;
       });
-    }, 40000); // Change video every 40 seconds
+    }, 30000); // 30 seconds for better user experience
 
     return () => clearInterval(interval);
-  }, [videoFiles]);
+  }, [videoFiles, failedVideos]);
 
-    // Reset error state when video index changes
+    // Reset error state and ensure single video playback when video index changes
     useEffect(() => {
       setVideoError(false);
-      setIsVideoLoading(false); // No loading state
-      setRetryCount(0); // Reset retry count for new video
+      setIsVideoLoading(false);
+      setRetryCount(0);
+      setIsVideoPlaying(false);
       
-      // Try to play video immediately when index changes
+      // Stop all other videos and ensure only current video plays
       if (videoRef.current) {
-        videoRef.current.play().catch(console.log);
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+        
+        // Try to play new video after a short delay
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.play()
+              .then(() => {
+                setIsVideoPlaying(true);
+                console.log(`▶️ Video ${currentVideoIndex + 1} started playing`);
+              })
+              .catch((error) => {
+                console.error(`❌ Failed to play video ${currentVideoIndex + 1}:`, error);
+                handleVideoError(currentVideoIndex, error);
+              });
+          }
+        }, 100);
       }
     }, [currentVideoIndex]);
 
-  // Enhanced preloading system optimized for Vercel deployment
+  // Component cleanup - ensure no video overlap on unmount
   useEffect(() => {
-    // Preload current video with quality optimization
-    const currentVideo = document.createElement('video');
-    currentVideo.src = videoFiles[currentVideoIndex];
-    currentVideo.preload = 'auto';
-    currentVideo.muted = true;
-    currentVideo.playsInline = true;
-    currentVideo.crossOrigin = 'anonymous';
-    currentVideo.load();
-
-    // Preload next video
-    const nextIndex = (currentVideoIndex + 1) % videoFiles.length;
-    const nextVideo = document.createElement('video');
-    nextVideo.src = videoFiles[nextIndex];
-    nextVideo.preload = 'auto';
-    nextVideo.muted = true;
-    nextVideo.playsInline = true;
-    nextVideo.crossOrigin = 'anonymous';
-    nextVideo.load();
-
-    // Preload the video after next
-    const afterNextIndex = (currentVideoIndex + 2) % videoFiles.length;
-    const afterNextVideo = document.createElement('video');
-    afterNextVideo.src = videoFiles[afterNextIndex];
-    afterNextVideo.preload = 'auto';
-    afterNextVideo.muted = true;
-    afterNextVideo.playsInline = true;
-    afterNextVideo.crossOrigin = 'anonymous';
-    afterNextVideo.load();
-
-    // Preload the video after that for even smoother transitions
-    const fourthIndex = (currentVideoIndex + 3) % videoFiles.length;
-    const fourthVideo = document.createElement('video');
-    fourthVideo.src = videoFiles[fourthIndex];
-    fourthVideo.preload = 'metadata'; // Metadata preload for fourth video
-    fourthVideo.muted = true;
-    fourthVideo.playsInline = true;
-    fourthVideo.crossOrigin = 'anonymous';
-    fourthVideo.load();
-
-    // 5-second early preloading timer (35 seconds into 40-second video)
-    const earlyPreloadTimer = setTimeout(() => {
-      console.log('⏰ 5 seconds remaining - Starting aggressive early preload...');
-      
-      // Aggressive preloading for next video
-      const nextVideoEarly = document.createElement('video');
-      nextVideoEarly.src = videoFiles[nextIndex];
-      nextVideoEarly.preload = 'auto';
-      nextVideoEarly.muted = true;
-      nextVideoEarly.playsInline = true;
-      nextVideoEarly.crossOrigin = 'anonymous';
-      nextVideoEarly.load();
-      
-      // Preload the video after next
-      const afterNextVideoEarly = document.createElement('video');
-      afterNextVideoEarly.src = videoFiles[afterNextIndex];
-      afterNextVideoEarly.preload = 'auto';
-      afterNextVideoEarly.muted = true;
-      afterNextVideoEarly.playsInline = true;
-      afterNextVideoEarly.crossOrigin = 'anonymous';
-      afterNextVideoEarly.load();
-      
-      // Preload the fourth video
-      const fourthVideoEarly = document.createElement('video');
-      fourthVideoEarly.src = videoFiles[fourthIndex];
-      fourthVideoEarly.preload = 'auto';
-      fourthVideoEarly.muted = true;
-      fourthVideoEarly.playsInline = true;
-      fourthVideoEarly.crossOrigin = 'anonymous';
-      fourthVideoEarly.load();
-      
-      console.log(`🎯 Aggressive early preload completed for videos ${nextIndex + 1}, ${afterNextIndex + 1}, and ${fourthIndex + 1}`);
-    }, 35000); // 5 seconds before video ends (40s total - 5s = 35s remaining)
-    
-    // Clean up previous preloaded videos and timer
     return () => {
-      clearTimeout(earlyPreloadTimer);
-      if (currentVideo) {
-        currentVideo.src = '';
-        currentVideo.load();
+      // Stop current video on unmount
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
       }
-      if (nextVideo) {
-        nextVideo.src = '';
-        nextVideo.load();
-      }
-      if (afterNextVideo) {
-        afterNextVideo.src = '';
-        afterNextVideo.load();
-      }
-      if (fourthVideo) {
-        fourthVideo.src = '';
-        fourthVideo.load();
-      }
+      
+      // Clean up preloaded videos
+      preloadVideosRef.current.forEach(video => {
+        if (video.parentNode) {
+          video.parentNode.removeChild(video);
+        }
+      });
+      preloadVideosRef.current = [];
     };
-  }, [currentVideoIndex, videoFiles]);
+  }, []);
 
   const handleDownloadResume = () => {
     const link = document.createElement('a');
@@ -290,15 +317,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               transition={{ duration: 0.1, ease: "easeInOut" }}
               onLoadedData={() => {
                 setIsVideoLoading(false);
-                if (videoRef.current) {
-                  videoRef.current.play().catch(console.log);
+                if (videoRef.current && !isVideoPlaying) {
+                  videoRef.current.play()
+                    .then(() => setIsVideoPlaying(true))
+                    .catch((error) => handleVideoError(currentVideoIndex, error));
                 }
               }}
               onCanPlay={() => {
-                // Video is ready to play without buffering
                 setIsVideoLoading(false);
-                if (videoRef.current) {
-                  videoRef.current.play().catch(console.log);
+                if (videoRef.current && !isVideoPlaying) {
+                  videoRef.current.play()
+                    .then(() => setIsVideoPlaying(true))
+                    .catch((error) => handleVideoError(currentVideoIndex, error));
                 }
               }}
               onCanPlayThrough={() => {
@@ -313,48 +343,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
               }}
                 onError={(e) => {
                   console.error('Video loading error:', e);
-                  console.log(`❌ Failed to load video ${currentVideoIndex + 1}: ${videoFiles[currentVideoIndex]}`);
-                  console.log(`🔄 Retry count: ${retryCount}`);
-                  
-                  setVideoError(true);
                   setIsVideoLoading(false);
-                  
-                  // Retry logic: try same video up to 2 times, then move to next
-                  if (retryCount < 2) {
-                    setTimeout(() => {
-                      console.log(`🔄 Retrying video ${currentVideoIndex + 1} (attempt ${retryCount + 1})...`);
-                      setRetryCount(prev => prev + 1);
-                      setVideoError(false);
-                      // Force reload the video
-                      if (videoRef.current) {
-                        videoRef.current.load();
-                      }
-                    }, 3000);
-                  } else {
-                    // After 2 retries, move to next video
-                    setTimeout(() => {
-                      console.log(`🔄 Moving to next video after ${retryCount} retries...`);
-                      setRetryCount(0);
-                      setCurrentVideoIndex((prev) => (prev + 1) % videoFiles.length);
-                    }, 2000);
-                  }
+                  setIsVideoPlaying(false);
+                  handleVideoError(currentVideoIndex, e);
                 }}
                 onAbort={() => {
                   console.log(`⏹️ Video ${currentVideoIndex + 1} aborted`);
                   // Don't treat abort as error, just log it
                 }}
                 onLoadStart={() => {
-                  // Start playing immediately when loading starts
-                  setIsVideoLoading(false);
+                  setIsVideoLoading(true);
                   console.log(`🔄 Starting to load video ${currentVideoIndex + 1}`);
-                  if (videoRef.current) {
-                    videoRef.current.play().catch(console.log);
-                  }
                 }}
                 onLoadedMetadata={() => {
-                  // Video metadata loaded - start playing immediately
-                  if (videoRef.current) {
-                    videoRef.current.play().catch(console.log);
+                  console.log(`📊 Video ${currentVideoIndex + 1} metadata loaded`);
+                  if (videoRef.current && !isVideoPlaying) {
+                    videoRef.current.play()
+                      .then(() => setIsVideoPlaying(true))
+                      .catch((error) => handleVideoError(currentVideoIndex, error));
                   }
                 }}
               onProgress={() => {
@@ -378,14 +384,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ isDarkMode }) => {
                 willChange: 'transform, opacity' // Optimize for animations
               }}
             >
-              <source src={videoFiles[currentVideoIndex]} type={videoFiles[currentVideoIndex].endsWith('.mp4') ? 'video/mp4' : 'video/webm'} />
-              {/* Fallback sources for better compatibility */}
-              {videoFiles[currentVideoIndex].endsWith('.mp4') && (
-                <source src={videoFiles[currentVideoIndex].replace('.mp4', '.webm')} type="video/webm" />
-              )}
-              {videoFiles[currentVideoIndex].endsWith('.webm') && (
-                <source src={videoFiles[currentVideoIndex].replace('.webm', '.mp4')} type="video/mp4" />
-              )}
+              <source src={videoFiles[currentVideoIndex]} type="video/webm" />
             </motion.video>
           ) : (
             /* Fallback background when video fails to load */

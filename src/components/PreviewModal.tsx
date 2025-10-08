@@ -163,13 +163,18 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                 {downloadUrl && (
                   <motion.a
                     href={downloadUrl}
-                    download
+                    download="Nishit_Bhardwaj_Resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`p-2 rounded-lg ${
                       isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'
                     } transition-colors`}
-                    title="Download"
+                    title="Download Resume PDF"
+                    onClick={(e) => {
+                      console.log('Download clicked in modal:', downloadUrl);
+                    }}
                   >
                     <Download className="w-5 h-5" />
                   </motion.a>

@@ -51,7 +51,17 @@ const Projects: React.FC<ProjectsProps> = ({ isDarkMode }) => {
   };
 
   const getProjectImages = (project: Project) => {
-    // In a real app, these would be actual project screenshots
+    // Special handling for Predictive Analytics project with actual images
+    if (project.id === 7) {
+      return [
+        "/src/assets/images/Predictive Analytics for Financial Risk Assessment/Data loadin.PNG",
+        "/src/assets/images/Predictive Analytics for Financial Risk Assessment/Feature Target.PNG",
+        "/src/assets/images/Predictive Analytics for Financial Risk Assessment/Model Matrix and evaluation.PNG",
+        "/src/assets/images/Predictive Analytics for Financial Risk Assessment/Model pipeline.PNG"
+      ];
+    }
+    
+    // For other projects, use placeholders
     return [
       project.image,
       `/api/placeholder/400/300?text=${project.title}+Screenshot+2`,
@@ -132,6 +142,18 @@ const Projects: React.FC<ProjectsProps> = ({ isDarkMode }) => {
       githubUrl: "https://github.com/BABAoMATIC/Weather-Analytics-Platform",
       liveUrl: "https://github.com/BABAoMATIC/Weather-Analytics-Platform",
       features: ["Weather Forecasting", "Data Visualization", "Climate Analysis", "Interactive Maps", "Historical Data", "API Integration"]
+    },
+    {
+      id: 7,
+      title: "Predictive Analytics for Financial Risk Assessment",
+      description: "Machine learning model for financial risk prediction and assessment",
+      longDescription: "An advanced predictive analytics system that analyzes financial data to assess risk levels and predict potential market fluctuations. Features comprehensive data preprocessing, model pipeline, and evaluation metrics for accurate financial forecasting.",
+      image: "/src/assets/images/Predictive Analytics for Financial Risk Assessment/Data loadin.PNG",
+      techStack: ["Python", "Pandas", "Scikit-learn", "NumPy", "Matplotlib", "Seaborn", "Jupyter"],
+      category: "Machine Learning",
+      githubUrl: "https://github.com/BABAoMATIC/Predictive-Analytics-Financial-Risk",
+      liveUrl: "https://github.com/BABAoMATIC/Predictive-Analytics-Financial-Risk",
+      features: ["Data Loading & Preprocessing", "Feature Engineering", "Model Training", "Performance Evaluation", "Risk Assessment", "Visualization"]
     }
   ];
 

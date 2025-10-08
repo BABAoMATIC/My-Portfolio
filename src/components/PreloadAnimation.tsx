@@ -14,15 +14,15 @@ const PreloadAnimation: React.FC<PreloadAnimationProps> = () => {
   useEffect(() => {
     // Video files to preload
     const videoFiles = [
-      '/videos/hero2.webm',  // Start with hero2
-      '/videos/hero4.mp4',
+      '/videos/hero2.webm',   // Start with hero2
+      '/videos/hero4.webm',   // Use webm version instead of mp4
       '/videos/hero5.webm',
-      '/videos/hero6.mp4',
+      '/videos/hero6.webm',   // Use webm version instead of mp4
       '/videos/hero7.webm',
       '/videos/hero8.webm',
       '/videos/hero9.webm',
       '/videos/hero10.webm',
-      '/videos/hero11.webm'    // Removed problematic hero1.mp4
+      '/videos/hero11.webm'   // Removed problematic hero1.mp4
     ];
 
     // Aggressive video preloading optimized for Vercel deployment

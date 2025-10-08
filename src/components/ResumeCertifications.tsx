@@ -44,11 +44,11 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
   const [isCertPreviewOpen, setIsCertPreviewOpen] = useState(false);
   const [selectedCert, setSelectedCert] = useState<Certification | null>(null);
 
-  // Sample resume images - in a real app, these would be actual resume screenshots
+  // Resume preview images - using placeholder for now
   const resumeImages = [
-    '/assets/images/resume-page-1.jpg',
-    '/assets/images/resume-page-2.jpg',
-    '/assets/images/resume-page-3.jpg'
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEwMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjcwMCIgaGVpZ2h0PSI5MDAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTAwIiB5PSIxMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMzMzMyIgZm9udC13ZWlnaHQ9ImJvbGQiPk5pc2hpdCBCaGFyZHdhaiAtIFJlc3VtZTwvdGV4dD48dGV4dCB4PSIxMDAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSIjNjY2NjY2Ij5GdWxsIFN0YWNrIERldmVsb3BlciB8IERhdGEgU2NpZW50aXN0PC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iMjAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiMzMzMzMzMiPkV4cGVyaWVuY2U6IDErIFllYXI8L3RleHQ+PHRleHQgeD0iMTAwIiB5PSIyMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzMzMzMzMyI+UHJvamVjdHM6IDUwKzwvdGV4dD48dGV4dCB4PSIxMDAiIHk9IjI2MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjMzMzMzMzIj5Ta2lsbHM6IFJlYWN0LCBOb2RlLmpzLCBQeXRob24sIE1hY2hpbmUgTGVhcm5pbmc8L3RleHQ+PC9zdmc+',
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEwMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjcwMCIgaGVpZ2h0PSI5MDAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTAwIiB5PSIxMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMzMzMyIgZm9udC13ZWlnaHQ9ImJvbGQiPkV4cGVyaWVuY2UgU2VjdGlvbjwvdGV4dD48dGV4dCB4PSIxMDAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSIjNjY2NjY2Ij5Tb2Z0d2FyZSBEZXZlbG9wZXIgLSBKYW51YXJ5IDIwMjQgLSBQcmVzZW50PC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iMjAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiMzMzMzMzMiPkRldmVsb3BlZCBhbmQgbWFpbnRhaW5lZCB3ZWIgYXBwbGljYXRpb25zPC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iMjMwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiMzMzMzMzMiPkNvbGxhYm9yYXRlZCB3aXRoIGNyb3NzLWZ1bmN0aW9uYWwgdGVhbXM8L3RleHQ+PC9zdmc+',
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEwMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2ZmZmZmZiIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjcwMCIgaGVpZ2h0PSI5MDAiIGZpbGw9IiNmOGZhZmMiIHN0cm9rZT0iIzMzMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTAwIiB5PSIxMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzMzMzMzMyIgZm9udC13ZWlnaHQ9ImJvbGQiPkVkdWNhdGlvbiAmIENlcnRpZmljYXRpb25zPC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM2NjY2NjYiPkJhY2hlbG9yIG9mIFRlY2hub2xvZ3k8L3RleHQ+PHRleHQgeD0iMTAwIiB5PSIyMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzMzMzMzMyI+Q29tcHV0ZXIgU2NpZW5jZSBFbmdpbmVlcmluZzwvdGV4dD48dGV4dCB4PSIxMDAiIHk9IjIzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjMzMzMzMzIj5NYWNoaW5lIExlYXJuaW5nIFNwZWNpYWxpemF0aW9uPC90ZXh0Pjx0ZXh0IHg9IjEwMCIgeT0iMjYwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiMzMzMzMzMiPkNvbHVtYmlhIFVuaXZlcnNpdHk8L3RleHQ+PC9zdmc+'
   ];
 
   const certifications: Certification[] = [
@@ -133,10 +133,24 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
   ];
 
   const handleDownloadResume = () => {
-    const link = document.createElement('a');
-    link.href = '/assets/Nishit bhardwaj resume.pdf';
-    link.download = 'Nishit_Bhardwaj_Resume.pdf';
-    link.click();
+    try {
+      const link = document.createElement('a');
+      link.href = '/assets/Nishit bhardwaj resume.pdf';
+      link.download = 'Nishit_Bhardwaj_Resume.pdf';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      
+      // Add to DOM, click, then remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log('Resume download initiated');
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      // Fallback: open in new tab
+      window.open('/assets/Nishit bhardwaj resume.pdf', '_blank');
+    }
   };
 
   const handleCertPreview = (cert: Certification) => {
@@ -146,7 +160,7 @@ const ResumeCertifications: React.FC<ResumeCertificationsProps> = ({ isDarkMode 
 
   const getCertImages = (cert: Certification) => {
     if (cert.id === 1) { // Columbia ML Certificate
-      return ['/assets/images/Machine learning 1 from columba +.png'];
+      return ['/src/assets/CErtificates/Machine learning 1 from columba +.png'];
     }
     // For other certificates, return placeholder images
     return ['/assets/images/cert-placeholder.jpg'];
